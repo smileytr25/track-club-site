@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../css-source/style.css">
+    </head>
+    <body>
+        <div class="navigation-bar">
+            <div class="header-row">
+                <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+                <button class="shopping-cart">
+                    <img class="shopping-icon" src="../image-assets/shopping-bag.png" width="26px">
+                </button>
+                <p class="company-name-text">Genesee Swift Track Club</p>
+            </div>
+            <div class="navigation-menu">
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/index.html">Home</button>
+                        <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/about.html'>About</button>
+                        <button class="expand-submenu-button">+</button>
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Coaches</button>
+                        <button class="nav-sub-button">Contact Us</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/run-with-gstc.html'>Run With GSTC</button>
+                        <button class="expand-submenu-button">+</button>
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Offerings</button>
+                        <button class="nav-sub-button">Register</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/upcoming-events.html'>Upcoming Events</button>
+                        <button class="expand-submenu-button">+</button>
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Calendar</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                       <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/gallery.html'>Gallery</button>
+                       <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/support.html">Support</button>
+                        <button class="expand-submenu-button">+</button> 
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Donate</button>
+                        <button class="nav-sub-button">Sponsorships</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/shop.html">Shop</button>
+                        <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="menu-backdrop" onclick="toggleMenu()"></div>
+        <div class="page-wrapper">
+            <img class="team-picture" src="../image-assets/team-picture.jpeg">
+            <div class="team-info-grid">
+                <div class="general-info">
+                    <div class="established-info">
+                        <h2 class="established-header">How Genesee Swift Began</h2>
+                        <p class="established-content">
+                            Genesee Swift was formed as result of an increased demand from parents urging us to 
+                            form a track program for our local and surrounding communities. Genesee Swift is a 501c3 
+                            non-profit corporation. 
+                        </p>
+                    </div>
+                    <div class="team-info">
+                        <h2 class="team-header">Join The Swift Family</h2>
+                        <p class="team-content">
+                            Genesee Swift is open to youth ages 8-18 in the Flint and Genesee County Area. 
+                            Athletes must be registered with the USA Amateur Athletic Union (AAU) in order to participate.
+                        </p>
+                    </div>
+                    <div class="team-goals-info">
+                        <h2 class="goals-header">What We Strive For</h2>
+                        <p class="goals-content">
+                            Power- and speed-focused training across all track & field events in a positive environment. 
+                            We teach teamwork, respect, discipline and sportsmanship—for athletes and parents—to build 
+                            friendships and next-level success.
+                        </p>
+                    </div>
+                </div>
+                <div class="slideshow-wrapper">
+                    <div class="slideshow-container">
+                        <div class="mySlides">
+                            <img src="../image-assets/200_meter.jpg" class="slide-image">
+                            <div class="text">200 Meters</div>
+                        </div>
+                        <div class="mySlides">
+                            <img src="../image-assets/4x400_relay.jpg" class="slide-image">
+                            <div class="text">4x400 Relay</div>
+                        </div>
+                        <div class="mySlides">
+                            <img src="../image-assets/4x100_relay.jpg" class="slide-image">
+                            <div class="text">4x100 Relay</div>
+                        </div>
+                        <div class="mySlides">
+                            <img src="../image-assets/high_jump.jpg" class="slide-image">
+                            <div class="text">High Jump</div>
+                        </div>
+                        <div class="mySlides">
+                            <img src="../image-assets/long_jump.jpg" class="slide-image">
+                            <div class="text">Long Jump</div>
+                        </div>
+                        <div class="mySlides">
+                            <img src="../image-assets/shot-put_discus.jpg" class="slide-image">
+                            <div class="text">Shot Put & Discus</div>
+                        </div>
+                        <a class="prev" onclick="showSlides(slideIndex - 1)">&#10094;</a>
+                        <a class="next" onclick="showSlides(slideIndex + 1)">&#10095;</a>
+                    </div>
+                    <div class="dot-controls">
+                        <span class="dot" onclick="showSlides(0)"></span>
+                        <span class="dot" onclick="showSlides(1)"></span>
+                        <span class="dot" onclick="showSlides(2)"></span>
+                        <span class="dot" onclick="showSlides(3)"></span>
+                        <span class="dot" onclick="showSlides(4)"></span>
+                        <span class="dot" onclick="showSlides(5)"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="mission-statement-container">
+                <blockquote class="mission-statement">
+                    Changing lives one event at a time to get to the next level. 
+                    <br>
+                    Hard Work. Positive Mind Set. Pain. Fun. Win.
+                </blockquote>
+            </div>
+            <div class="social-site-links">
+                <div class="icon-list">
+                    <a href="https://www.linkedin.com/in/trenton-marcus-smiley" class="social-site-link" target="_blank">
+                        <img class="social-icon" src="../image-assets/facebook.png">
+                        <p class="social-site-title">
+                            Facebook
+                        </p>
+                    </a>
+                    <a href="https://app.joinhandshake.com/profiles/tss4ds" class="social-site-link" target="_blank">
+                        <img class="social-icon" src="../image-assets/running-track.png">
+                        <p class="social-site-title">
+                            Athletic.net
+                        </p>
+                    </a>
+                    <a href="https://github.com/smileytr25" class="social-site-link" target="_blank">
+                        <img class="social-icon" src="../image-assets/linkedin.png">
+                        <p class="social-site-title">
+                            LinkedIn
+                        </p>
+                    </a>
+                    <a href="https://www.instagram.com/trenton.smiley/" class="social-site-link" target="_blank">
+                        <img class="social-icon" src="../image-assets/instagram.png">
+                        <p class="social-site-title">
+                            Instagram
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <footer style="text-align: center; padding: 20px; font-size: 14px; color: white; background-color: #DC5F00; border-top: solid white 3px">
+                &copy; 2025 Genesee Swift Track Club. All rights reserved.
+            </footer>
+        </div>
+    </body>
+    <script src="../js-source/nav-bar.js"></script>
+    <script src="../js-source/slideshow.js"></script>
+</html>
