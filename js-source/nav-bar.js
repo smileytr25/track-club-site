@@ -79,6 +79,19 @@ document.querySelectorAll('.nav-button-wrapper').forEach(item => {
   });
 });
 
+// Submenu item navigation
+document.querySelectorAll('.nav-sub-button').forEach(subBtn => {
+  subBtn.addEventListener('click', function (e) {
+    // Prevent bubbling to parent handlers that might toggle submenus
+    e.stopPropagation();
+    const href = subBtn.dataset.href;
+    if (href) {
+      // Navigate immediately to the provided data-href
+      window.location.href = href;
+    }
+  });
+});
+
 function toggleMenu() {
   const menu = document.querySelector(".navigation-menu");
   const body = document.body;
