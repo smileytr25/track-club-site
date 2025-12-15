@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../css-source/style.css">
+	</head>
+	<body>
+		<div class="navigation-bar">
+			<div class="header-row">
+				<button class="nav-toggle" onclick="toggleMenu()">☰</button>
+				<button class="shopping-cart">
+					<img class="shopping-icon" src="../image-assets/shopping-bag.png" width="26px" alt="Shopping Bag">
+				</button>
+				<p class="company-name-text">Genesee Swift Track Club</p>
+			</div>
+			<div class="navigation-menu">
+				<div class="nav-button-wrapper">
+					<div class="nav-button-header">
+						<button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/index.html">Home</button>
+						<button class="expand-submenu-button" style="visibility: hidden;">+</button>
+					</div>
+				</div>
+
+				<div class="nav-button-wrapper">
+					<div class="nav-button-header">
+						<button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/about.html'>About</button>
+						<button class="expand-submenu-button">+</button>
+					</div>
+					<div class="nav-submenu">
+						<button class="nav-sub-button">Coaches</button>
+						<button class="nav-sub-button">Contact Us</button>
+					</div>
+				</div>
+
+				<div class="nav-button-wrapper">
+					<div class="nav-button-header">
+						<button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/run-with-gstc.html'>Run With GSTC</button>
+						<button class="expand-submenu-button">+</button>
+					</div>
+					<div class="nav-submenu">
+						<button class="nav-sub-button" data-href='http://127.0.0.1:5500/html-souce/Offerings'>Offerings</button>
+						<button class="nav-sub-button">Register</button>
+					</div>
+				</div>
+
+				<div class="nav-button-wrapper">
+					<div class="nav-button-header">
+						<button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/upcoming-events.html'>Upcoming Events</button>
+						<button class="expand-submenu-button">+</button>
+					</div>
+					<div class="nav-submenu">
+						<button class="nav-sub-button">Calendar</button>
+					</div>
+				</div>
+
+				<div class="nav-button-wrapper">
+					<div class="nav-button-header">
+					   <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/gallery.html'>Gallery</button>
+					   <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+					</div>
+				</div>
+
+				<div class="nav-button-wrapper">
+					<div class="nav-button-header">
+						<button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/support.html">Support</button>
+						<button class="expand-submenu-button">+</button> 
+					</div>
+					<div class="nav-submenu">
+						<button class="nav-sub-button">Donate</button>
+						<button class="nav-sub-button">Sponsorships</button>
+					</div>
+				</div>
+
+				<div class="nav-button-wrapper">
+					<div class="nav-button-header">
+						<button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/shop.html">Shop</button>
+						<button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="menu-backdrop" onclick="toggleMenu()"></div>
+
+		<div class="page-wrapper">
+			<div class="offerings-hero">
+				<h1>Track &amp; Field Offerings</h1>
+				<p>From sprints to throws, we train every athlete to compete confidently across their chosen events.</p>
+			</div>
+
+			<div class="offerings-wrapper">
+				<div class="offerings-intro-card">
+					<h2>What We Train</h2>
+					<p>Our coaches cover the full spectrum of youth track &amp; field disciplines. Athletes learn proper technique, smart race strategies, and competition-ready habits in a supportive team environment.</p>
+				</div>
+
+				<div class="event-grid">
+					<div class="event-card">
+						<div class="event-card-tag">Running Events</div>
+						<h3>Speed, Endurance, &amp; Relays</h3>
+						<ul class="event-list two-column">
+							<li>100m Dash</li>
+							<li>200m Dash</li>
+							<li>400m Dash</li>
+							<li>800m Run</li>
+							<li>1500m Run</li>
+							<li>3000m Run</li>
+							<li>200m Hurdles</li>
+							<li>400m Hurdles</li>
+							<li>4x100 Relay</li>
+							<li>4x800 Relay</li>
+							<li>1600m Relay</li>
+						</ul>
+						<p class="event-note">We emphasize starts, race strategy, baton exchanges, and pacing drills tailored to each athlete.</p>
+					</div>
+
+					<div class="event-card">
+						<div class="event-card-tag">Field Events</div>
+						<h3>Power, Flight, &amp; Technique</h3>
+						<ul class="event-list one-column">
+							<li>Long Jump</li>
+							<li>High Jump</li>
+							<li>Shot Put</li>
+							<li>Discus</li>
+							<li>Turbo Javelin</li>
+							<li>Javelin</li>
+						</ul>
+						<p class="event-note">Athletes build explosive strength, approach rhythm, and safe, repeatable technique for every field event.</p>
+					</div>
+				</div>
+
+				<div class="training-focus">
+					<div class="focus-card">
+						<h4>Technique First</h4>
+						<p>Progressions, drills, and video feedback help athletes master fundamentals before adding intensity.</p>
+					</div>
+					<div class="focus-card">
+						<h4>Strength &amp; Mobility</h4>
+						<p>Age-appropriate strength, stability, and flexibility work to support power and reduce injury risk.</p>
+					</div>
+					<div class="focus-card">
+						<h4>Competition Ready</h4>
+						<p>Meet-day routines, mental preparation, and relay chemistry so athletes show up confident.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="../js-source/nav-bar.js"></script>
+	<script src="../js-source/slideshow.js"></script>
+</html>
