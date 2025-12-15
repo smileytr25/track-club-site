@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../css-source/style.css">
+    </head>
+    <body>
+        <div class="navigation-bar">
+            <div class="header-row">
+                <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+                <button class="shopping-cart">
+                    <img class="shopping-icon" src="../image-assets/shopping-bag.png" width="26px">
+                </button>
+                <p class="company-name-text">Genesee Swift Track Club</p>
+            </div>
+            <div class="navigation-menu">
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/index.html">Home</button>
+                        <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/about.html'>About</button>
+                        <button class="expand-submenu-button">+</button>
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Coaches</button>
+                        <button class="nav-sub-button">Contact Us</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/run-with-gstc.html'>Run With GSTC</button>
+                        <button class="expand-submenu-button">+</button>
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Offerings</button>
+                        <button class="nav-sub-button">Register</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/upcoming-events.html'>Upcoming Events</button>
+                        <button class="expand-submenu-button">+</button>
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Calendar</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                       <button class="nav-button" data-href='http://127.0.0.1:5500/html-souce/gallery.html'>Gallery</button>
+                       <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/support.html">Support</button>
+                        <button class="expand-submenu-button">+</button> 
+                    </div>
+                    <div class="nav-submenu">
+                        <button class="nav-sub-button">Donate</button>
+                        <button class="nav-sub-button">Sponsorships</button>
+                    </div>
+                </div>
+
+                <div class="nav-button-wrapper">
+                    <div class="nav-button-header">
+                        <button class="nav-button" data-href="http://127.0.0.1:5500/html-souce/shop.html">Shop</button>
+                        <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="menu-backdrop" onclick="toggleMenu()"></div>
+        <div class="page-wrapper">
+            <div class="about-hero">
+                <h1>About Genesee Swift Track Club</h1>
+                <p>Building champions through dedication, discipline, and excellence in track and field</p>
+            </div>
+
+            <div class="about-content-wrapper">
+                <div class="about-section">
+                    <div class="about-text">
+                        <div class="about-text-card">
+                            <h2>Our Mission</h2>
+                            <p>
+                                Genesee Swift Track Club is dedicated to developing young athletes through comprehensive 
+                                track and field training. We focus on building not just athletic excellence, but character, 
+                                discipline, and lifelong skills that extend beyond the track.
+                            </p>
+                            <p>
+                                Our program emphasizes individual growth while fostering team spirit and sportsmanship. 
+                                We believe every athlete has unique potential, and our coaches work to unlock that 
+                                potential through personalized attention and proven training methods.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="about-image" style="--img: url('https://raw.githubusercontent.com/smileytr25/GeneseeSwiftImages/main/Photo%20Jul%2019%202025%2C%202%2051%2042%20PM.jpg')">
+                        <img src="https://raw.githubusercontent.com/smileytr25/GeneseeSwiftImages/main/Photo%20Jul%2019%202025%2C%202%2051%2042%20PM.jpg" alt="Team Photo" loading="lazy"/>
+                    </div>
+                </div>
+
+                <div class="info-cards-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">1</div>
+                        <h3>Youth Development</h3>
+                        <p>Serving athletes ages 8-18 in the Flint and Genesee County area with age-appropriate training programs.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">2</div>
+                        <h3>Competitive Excellence</h3>
+                        <p>Participating in AAU sanctioned meets and preparing athletes for regional and national competitions.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">3</div>
+                        <h3>Family Atmosphere</h3>
+                        <p>Creating a supportive community where athletes, families, and coaches work together toward common goals.</p>
+                    </div>
+                </div>
+
+                <div class="about-section reverse">
+                    <div class="about-text">
+                        <div class="about-text-card">
+                            <h2>What We Offer</h2>
+                            <p>
+                                Genesee Swift Track Club provides comprehensive training across all track and field disciplines:
+                            </p>
+                            <ul>
+                                <li><strong>Sprint Events:</strong> 100m, 200m, 400m with speed and technique training</li>
+                                <li><strong>Distance Running:</strong> 800m, 1500m with endurance and pacing strategies</li>
+                                <li><strong>Relay Events:</strong> 4x100m, 4x400m with team coordination and baton passing</li>
+                                <li><strong>Field Events:</strong> Long jump, high jump, shot put, and discus</li>
+                                <li><strong>Strength & Conditioning:</strong> Age-appropriate fitness programs</li>
+                                <li><strong>Mental Training:</strong> Focus, goal-setting, and competition preparation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="about-image" style="--img: url('https://raw.githubusercontent.com/smileytr25/GeneseeSwiftImages/main/Photo%20Jul%2019%202025%2C%201%2034%2011%20PM.jpg')">
+                        <img src="https://raw.githubusercontent.com/smileytr25/GeneseeSwiftImages/main/Photo%20Jul%2019%202025%2C%201%2034%2011%20PM.jpg" alt="Team Photo" loading="lazy"/>
+                    </div>
+                </div>
+
+                <div class="location-section">
+                    <div class="location-section-header">
+                        <h2>Practice Information</h2>
+                    </div>
+                    <div class="location-details-row">
+                        <div class="map-wrapper">
+                            <iframe
+                                class="mini-map"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11680.48131483724!2d-83.72543045878872!3d42.95466862289029!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8823791aee062cf7%3A0x3a6a63b9e758f36!2sCarman-Ainsworth%20Middle%20School!5e0!3m2!1sen!2sus!4v1750392654537!5m2!1sen!2sus" 
+                                width="100%" 
+                                height="100%"
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                        <div class="practice-info-column">
+                            <div class="info-detail-card">
+                                <h3>📅 Practice Schedule</h3>
+                                <p>
+                                    Monday - Friday<br>
+                                    5:30 PM - 7:30 PM<br>
+                                    Year-round training with seasonal focus
+                                </p>
+                            </div>
+                            <div class="info-detail-card">
+                                <h3>📍 Location</h3>
+                                <p>
+                                    Carman Ainsworth Middle School<br>
+                                    1409 W Maple Ave<br>
+                                    Flint, MI 48507
+                                </p>
+                            </div>
+                            <div class="info-detail-card">
+                                <h3>👟 What to Bring</h3>
+                                <p>
+                                    Running shoes, athletic clothing, water bottle, positive attitude, and willingness to work hard
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-text-card" style="margin-bottom: 40px;">
+                    <h2>Membership Requirements</h2>
+                    <p>
+                        All athletes must be registered with the USA Amateur Athletic Union (AAU) to participate in practices 
+                        and competitions. AAU membership provides insurance coverage and eligibility for sanctioned meets 
+                        throughout the season.
+                    </p>
+                    <p>
+                        We welcome athletes of all skill levels, from beginners exploring track and field for the first time 
+                        to experienced competitors seeking to reach the next level. Our coaches tailor training to meet each 
+                        athlete where they are and help them progress toward their goals.
+                    </p>
+                </div>
+            </div>
+
+            <footer style="text-align: center; padding: 20px; font-size: 14px; color: white; background-color: #DC5F00; border-top: solid white 3px">
+                &copy; 2025 Genesee Swift Track Club. All rights reserved.
+            </footer>
+        </div>
+    </body>
+    <script src="../js-source/nav-bar.js"></script>
+</html>
