@@ -1238,6 +1238,59 @@ body.no-scroll {
   line-height: 1.6;
 }
 
+.coaches-grid { 
+  display: flex; 
+  gap: 20px; 
+  max-width:1100px; 
+  margin:28px auto; 
+  padding: 0 16px; 
+}
+    
+.coaches-grid > .col-left, .coaches-grid > .col-right { 
+  display:flex; 
+  flex-direction: column; 
+  gap: 20px; 
+  flex: 1; 
+}
+
+.coach-photo-slot {
+  background: #f4f4f4;
+  border-radius: 12px;
+  padding: 0; /* remove inner padding so image fills the slot */
+  display: block;
+  width: 100%;
+  aspect-ratio: 696 / 464; /* maintain 3:2 ratio */
+  overflow: hidden;
+}
+    
+.coach-photo-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* crop to fill while preserving aspect */
+  display: block;
+}
+    
+.about-text-card { 
+  width: 100%; 
+}
+    
+@media (max-width:900px) { 
+  .coaches-grid { 
+    display: block; 
+    padding: 0 12px; 
+  } 
+  
+  .coaches-grid > .col-left, .coaches-grid > .col-right { 
+    display:block; 
+  } 
+
+  /* Add vertical spacing when stacked (mobile) so cards/photos don't touch */
+  .coaches-grid .about-text-card,
+  .coaches-grid .coach-photo-slot {
+    margin-bottom: 20px;
+  }
+}
+
 /* Responsive breakpoints */
 @media (max-width: 1100px) {
 
