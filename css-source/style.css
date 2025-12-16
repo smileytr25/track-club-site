@@ -916,12 +916,19 @@ body.no-scroll {
 }
 
 .event-card {
-  background: white;
+  background-color: white;
+  background-image: 
+    linear-gradient(45deg, rgba(255, 122, 31, 0.30) 25%, transparent 25%, transparent 75%, rgba(255, 122, 31, 0.30) 75%),
+    linear-gradient(45deg, rgba(255, 122, 31, 0.30) 25%, transparent 25%, transparent 75%, rgba(255, 122, 31, 0.30) 75%);
+  background-size: 30px 30px;
+  background-position: 0 calc(100%), 15px calc(100% - 15px);
+  background-repeat: repeat-x;
   padding: 36px;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(220, 95, 0, 0.12);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
 }
 
 .event-card:hover {
@@ -934,53 +941,60 @@ body.no-scroll {
   background: linear-gradient(135deg, #DC5F00 0%, #ff7a1f 100%);
   color: white;
   padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 25px;
   letter-spacing: 0.4px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  width: 100%;
 }
 
 .event-card h3 {
-  color: #DC5F00;
-  font-size: 26px;
+  color: #555;
+  font-size: 20px;
   font-weight: 600;
-  margin: 0 0 16px 0;
+  margin: 0 0 28px 0;
+  padding-left: 0;
   letter-spacing: 0.3px;
-}
-
-.event-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 10px 18px;
+  text-align: center;
 }
 
 .event-list.two-column {
+  padding: 0 0 0 35px;
+  width: fit-content;
+  text-align: left;
+  gap: 10px 18px;
+  display: grid;
   grid-template-columns: repeat(2, minmax(150px, 1fr));
-}
-
-.event-list.one-column {
-  grid-template-columns: 1fr;
+  margin: 0 auto;
+  padding-left: 0;
+  list-style-type: none;
+  align-content: start;
+  height: 200px;
 }
 
 .event-list li {
   position: relative;
-  padding-left: 18px;
+  padding-left: 0;
+  text-align: center;
   color: #555;
   font-size: 17px;
+  font-weight: bold;
   line-height: 1.4;
 }
 
 .event-list li::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: -14px;
   top: 10px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: #DC5F00;
+}
+
+.event-list.two-column li::before {
+  display: none;
 }
 
 .event-note {
@@ -989,6 +1003,8 @@ body.no-scroll {
   font-size: 15px;
   line-height: 1.6;
   letter-spacing: 0.2px;
+  text-align: center;
+  min-height: 64px;
 }
 
 .training-focus {
