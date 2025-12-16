@@ -929,6 +929,103 @@ body.no-scroll {
   }
 }
 
+/* Custom form controls: modern, accessible styling for inputs, selects, textareas, and checkboxes */
+.about-text-card input[type="text"],
+.about-text-card input[type="email"],
+.about-text-card input[type="tel"],
+.about-text-card input[type="date"],
+.about-text-card input[type="number"],
+.about-text-card textarea,
+.about-text-card select {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02) inset;
+  transition: box-shadow 160ms ease, transform 120ms ease, border-color 120ms ease;
+  outline: none;
+  width: 100%;
+  font-size: 15px;
+  color: #222;
+}
+
+.about-text-card textarea { min-height: 84px; resize: vertical; }
+
+.about-text-card input:focus,
+.about-text-card textarea:focus,
+.about-text-card select:focus {
+  box-shadow: 0 8px 24px rgba(220,95,0,0.12);
+  transform: translateY(-1px);
+  border-color: rgba(220,95,0,0.45);
+}
+
+/* Custom select: remove native arrow and add subtle SVG arrow */
+.about-text-card select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.35) 50%), linear-gradient(135deg, rgba(0,0,0,0.35) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+
+/* Checkbox styling: modern rounded square with animated check */
+.about-text-card input[type="checkbox"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: background 160ms ease, transform 120ms ease, border-color 120ms ease;
+}
+
+.about-text-card input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid white;
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(40deg) scale(0);
+  transform-origin: center;
+  transition: transform 140ms ease;
+}
+
+.about-text-card input[type="checkbox"]:checked {
+  background: linear-gradient(135deg,#DC5F00,#ff7a1f);
+  border-color: transparent;
+}
+
+.about-text-card input[type="checkbox"]:checked::after {
+  transform: rotate(40deg) scale(1);
+}
+
+/* Make entire label clickable and align nicely */
+.about-text-card label { display: block; cursor: pointer; color: #333; }
+.about-text-card label > input[type="checkbox"] { margin-right: 10px; }
+
+/* Small form control tweaks for mobile */
+@media (max-width: 700px) {
+  .about-text-card input[type="text"],
+  .about-text-card input[type="email"],
+  .about-text-card input[type="tel"],
+  .about-text-card select,
+  .about-text-card textarea { padding: 12px; font-size: 15px; }
+}
+
 .info-detail-card:hover {
   transform: translateX(4px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
@@ -1237,9 +1334,13 @@ body.no-scroll {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .location-section {
     display: none;
+  }
+
+  .about-hero h1 {
+    font-size: 36px;
   }
 }
 @media (max-width: 420px) {

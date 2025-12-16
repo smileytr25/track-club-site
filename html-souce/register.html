@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Register — Genesee Swift Track Club</title>
+  <link rel="stylesheet" href="../css-source/style.css">
+</head>
+<body>
+  <div class="navigation-bar">
+    <div class="header-row">
+      <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+      <button class="shopping-cart">
+        <img class="shopping-icon" src="../image-assets/shopping-bag.png" alt="cart">
+      </button>
+      <p class="company-name-text">Genesee Swift Track Club</p>
+    </div>
+    <div class="navigation-menu">
+      <div class="nav-button-wrapper">
+        <div class="nav-button-header">
+          <button class="nav-button" data-href="index.html">Home</button>
+          <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+        </div>
+      </div>
+
+      <div class="nav-button-wrapper">
+        <div class="nav-button-header">
+          <button class="nav-button" data-href='about.html'>About</button>
+          <button class="expand-submenu-button">+</button>
+        </div>
+        <div class="nav-submenu">
+          <button class="nav-sub-button" data-href="about.html#coaches">Coaches</button>
+          <button class="nav-sub-button" data-href="about.html#contact">Contact Us</button>
+        </div>
+      </div>
+
+      <div class="nav-button-wrapper">
+        <div class="nav-button-header">
+          <button class="nav-button" data-href='run-with-gstc.html'>Run With GSTC</button>
+          <button class="expand-submenu-button">+</button>
+        </div>
+        <div class="nav-submenu">
+          <button class="nav-sub-button" data-href="offerings.html">Offerings</button>
+          <button class="nav-sub-button" data-href="register.html">Register</button>
+        </div>
+      </div>
+
+      <div class="nav-button-wrapper">
+        <div class="nav-button-header">
+          <button class="nav-button" data-href='upcoming-events.html'>Upcoming Events</button>
+          <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+        </div>
+      </div>
+
+      <div class="nav-button-wrapper">
+        <div class="nav-button-header">
+          <button class="nav-button" data-href='gallery.html'>Gallery</button>
+          <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+        </div>
+      </div>
+
+      <div class="nav-button-wrapper">
+        <div class="nav-button-header">
+          <button class="nav-button" data-href="support.html">Support</button>
+          <button class="expand-submenu-button">+</button>
+        </div>
+        <div class="nav-submenu">
+          <button class="nav-sub-button" data-href="support.html#donate">Donate</button>
+          <button class="nav-sub-button" data-href="support.html#sponsors">Sponsorships</button>
+        </div>
+      </div>
+
+      <div class="nav-button-wrapper">
+        <div class="nav-button-header">
+          <button class="nav-button" data-href="shop.html">Shop</button>
+          <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-backdrop" onclick="toggleMenu()"></div>
+
+  <div class="page-wrapper">
+    <div class="about-hero">
+      <h1>Register for Genesee Swift</h1>
+      <p>Complete the form below to register your child for our programs.</p>
+    </div>
+
+    <main style="max-width:900px;margin:40px auto;padding:0 16px;">
+      <form id="registerForm" class="about-text-card" novalidate>
+        <h2>Parent / Guardian Information</h2>
+        <label>
+          Parent / Guardian Name *<br>
+          <input type="text" name="parentName" required style="width:100%;padding:8px;margin-top:6px;" />
+        </label>
+        <div style="display:flex;gap:12px;margin-top:12px;">
+          <div style="flex:1">
+            <label>
+              Email *<br>
+              <input type="email" id="parentEmail" name="parentEmail" required style="width:100%;padding:8px;margin-top:6px;" />
+              <div id="parentEmailError" class="field-error" style="color:crimson;font-size:13px;height:18px;margin-top:6px;"></div>
+            </label>
+            <label style="display:block;margin-top:10px;">
+              Confirm Email *<br>
+              <input type="email" id="parentConfirmEmail" name="parentConfirmEmail" required style="width:100%;padding:8px;margin-top:6px;" />
+              <div id="parentConfirmEmailError" class="field-error" style="color:crimson;font-size:13px;height:18px;margin-top:6px;"></div>
+            </label>
+          </div>
+          <label style="flex:1">
+            Phone *<br>
+            <input type="tel" name="parentPhone" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+        </div>
+
+        <h2 style="margin-top:18px;">Child Information</h2>
+        <label>
+          Child's Full Name *<br>
+          <input type="text" name="childName" required style="width:100%;padding:8px;margin-top:6px;" />
+        </label>
+        <div style="display:flex;gap:12px;margin-top:12px;">
+          <label style="flex:1">
+            Date of Birth *<br>
+            <input type="date" id="childDob" name="childDob" required style="width:100%;padding:8px;margin-top:6px;" />
+            <div id="dobError" class="field-error" style="color:crimson;font-size:13px;height:18px;margin-top:6px;"></div>
+          </label>
+          <label style="flex:1">
+            Age *<br>
+            <input type="number" name="childAge" min="6" max="25" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+        </div>
+
+        <label style="display:block;margin-top:12px;">
+          Gender<br>
+          <select name="childGender" style="width:100%;padding:8px;margin-top:6px;">
+            <option value="">Prefer not to say</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="nonbinary">Non-binary</option>
+          </select>
+        </label>
+
+        <label style="display:block;margin-top:14px;">Events Interested In</label>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px;">
+          <label><input type="checkbox" id="interest_sprints" name="interest_sprints"> Sprints</label>
+          <label><input type="checkbox" id="interest_distance" name="interest_distance"> Distance</label>
+          <label><input type="checkbox" id="interest_relays" name="interest_relays"> Relays</label>
+          <label><input type="checkbox" id="interest_jumps" name="interest_jumps"> Jumps</label>
+          <label><input type="checkbox" id="interest_throws" name="interest_throws"> Throws</label>
+        </div>
+
+        <h3 style="margin-top:16px;">Address & Program</h3>
+        <label>
+          Address Line 1 *<br>
+          <input type="text" id="address_line1" name="address_line1" required style="width:100%;padding:8px;margin-top:6px;" />
+        </label>
+        <label style="margin-top:10px;">
+          Address Line 2<br>
+          <input type="text" id="address_line2" name="address_line2" style="width:100%;padding:8px;margin-top:6px;" />
+        </label>
+        <div style="display:flex;gap:12px;margin-top:12px;">
+          <label style="flex:1">
+            City *<br>
+            <input type="text" id="city" name="city" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+          <label style="flex:1">
+            State *<br>
+            <input type="text" id="state" name="state" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:12px;">
+          <label style="flex:1">
+            Postal Code *<br>
+            <input type="text" id="postal_code" name="postal_code" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+          <label style="flex:1">
+            School District *<br>
+            <input type="text" id="school_district" name="school_district" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+        </div>
+        <label style="display:block;margin-top:12px;">
+          Program *<br>
+          <select id="program" name="program" required style="width:100%;padding:8px;margin-top:6px;">
+            <option value="">Select a program</option>
+            <option value="Indoor Track">Indoor Track</option>
+            <option value="Outdoor Track">Outdoor Track</option>
+          </select>
+        </label>
+
+        <h3 style="margin-top:16px;">Emergency Contact</h3>
+        <div style="display:flex;gap:12px;">
+          <label style="flex:1">
+            Name *<br>
+            <input type="text" name="emergencyName" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+          <label style="flex:1">
+            Phone *<br>
+            <input type="tel" name="emergencyPhone" required style="width:100%;padding:8px;margin-top:6px;" />
+          </label>
+        </div>
+
+        <label style="display:block;margin-top:12px;">
+          Medical / Allergies (optional)<br>
+          <textarea name="medical" rows="3" style="width:100%;padding:8px;margin-top:6px;"></textarea>
+        </label>
+
+        <label style="display:block;margin-top:12px;">
+          <input type="checkbox" name="consent" required /> I consent to my child participating and agree to the club's policies. *
+        </label>
+
+        <div style="display:flex;gap:12px;margin-top:18px;align-items:center;">
+          <button id="submitBtn" type="submit" style="background:linear-gradient(135deg,#DC5F00,#ff7a1f);color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;">Submit Registration</button>
+          <div id="formMessage" style="color:#555;font-size:14px;"></div>
+        </div>
+      </form>
+    </main>
+
+    <footer style="text-align: center; padding: 20px; font-size: 14px; color: white; background-color: #DC5F00; border-top: solid white 3px; margin-top:40px;">
+      &copy; 2025 Genesee Swift Track Club. All rights reserved.
+    </footer>
+  </div>
+
+  <script src="../js-source/nav-bar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('registerForm');
+      const parentEmail = document.getElementById('parentEmail');
+      const parentEmailError = document.getElementById('parentEmailError');
+      const parentConfirm = document.getElementById('parentConfirmEmail');
+      const parentConfirmEmailError = document.getElementById('parentConfirmEmailError');
+      const dob = document.getElementById('childDob');
+      const dobError = document.getElementById('dobError');
+      const msg = document.getElementById('formMessage');
+      const submitBtn = document.getElementById('submitBtn');
+
+      // set DOB min/max so browser shows valid range (child age 8-18)
+      const today = new Date();
+      const maxDate = new Date(today.getFullYear() - 8, today.getMonth(), today.getDate()); // latest allowed DOB
+      const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()); // earliest allowed DOB
+      function toYMD(d) { return d.toISOString().slice(0, 10); }
+      if (dob) {
+        dob.setAttribute('max', toYMD(maxDate));
+        dob.setAttribute('min', toYMD(minDate));
+      }
+
+      function validateEmails() {
+        parentEmailError.textContent = '';
+        parentConfirmEmailError.textContent = '';
+        const a = parentEmail.value.trim();
+        const b = parentConfirm.value.trim();
+        if (!a && !b) return true;
+        if (!a || !b) {
+          parentConfirmEmailError.textContent = 'Please enter both email fields.';
+          parentConfirm.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        if (a.toLowerCase() !== b.toLowerCase()) {
+          parentConfirmEmailError.textContent = 'Emails do not match.';
+          parentConfirm.setAttribute('aria-invalid', 'true');
+          return false;
+        }
+        parentConfirm.removeAttribute('aria-invalid');
+        return true;
+      }
+
+      function validateDOB() {
+        dobError.textContent = '';
+        if (!dob.value) { dobError.textContent = 'Please enter date of birth.'; dob.setAttribute('aria-invalid', 'true'); return false; }
+        const bday = new Date(dob.value);
+        let age = today.getFullYear() - bday.getFullYear();
+        const m = today.getMonth() - bday.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < bday.getDate())) age--;
+        if (age < 8 || age > 18) { dobError.textContent = 'Child must be between 8 and 18 years old.'; dob.setAttribute('aria-invalid', 'true'); return false; }
+        dob.removeAttribute('aria-invalid');
+        return true;
+      }
+
+      parentEmail.addEventListener('input', function () { validateEmails(); msg.textContent = ''; });
+      parentConfirm.addEventListener('input', function () { validateEmails(); msg.textContent = ''; });
+      dob.addEventListener('input', function () { validateDOB(); msg.textContent = ''; });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        msg.textContent = '';
+
+        // basic required checks
+        const required = form.querySelectorAll('[required]');
+        for (const f of required) {
+          if (f.type === 'checkbox') {
+            if (!f.checked) { msg.textContent = 'Please complete all required fields.'; msg.style.color = 'crimson'; f.focus(); return; }
+          } else {
+            if (!f.value) { msg.textContent = 'Please complete all required fields.'; msg.style.color = 'crimson'; f.focus(); return; }
+          }
+        }
+
+        // live-validated checks
+        if (!validateEmails()) { msg.textContent = 'Please fix email fields.'; msg.style.color = 'crimson'; parentConfirm.focus(); return; }
+        if (!validateDOB()) { msg.textContent = 'Please fix date of birth.'; msg.style.color = 'crimson'; dob.focus(); return; }
+
+        // prepare payload expected by API
+        const payload = {
+          first_name: '',
+          last_name: '',
+          date_of_birth: document.getElementById('childDob').value,
+          guardian_name: (document.getElementsByName('parentName')[0] || {}).value || '',
+          email: document.getElementById('parentEmail').value.trim(),
+          phone: (document.getElementsByName('parentPhone')[0] || {}).value || '',
+          gender: (document.getElementsByName('childGender')[0] || {}).value || '',
+          address_line1: (document.getElementById('address_line1') || {}).value || '',
+          address_line2: (document.getElementById('address_line2') || {}).value || '',
+          city: (document.getElementById('city') || {}).value || '',
+          state: (document.getElementById('state') || {}).value || '',
+          postal_code: (document.getElementById('postal_code') || {}).value || '',
+          school_district: (document.getElementById('school_district') || {}).value || '',
+          program: (document.getElementById('program') || {}).value || '',
+          interest_sprints: !!(document.getElementById('interest_sprints') && document.getElementById('interest_sprints').checked),
+          interest_distance: !!(document.getElementById('interest_distance') && document.getElementById('interest_distance').checked),
+          interest_relays: !!(document.getElementById('interest_relays') && document.getElementById('interest_relays').checked),
+          interest_jumps: !!(document.getElementById('interest_jumps') && document.getElementById('interest_jumps').checked),
+          interest_throws: !!(document.getElementById('interest_throws') && document.getElementById('interest_throws').checked),
+          allergies: (document.getElementsByName('medical')[0] || {}).value || ''
+        };
+
+        // split child name into first/last (best-effort)
+        const childName = (document.getElementsByName('childName')[0] || {}).value ? (document.getElementsByName('childName')[0].value || '').trim() : '';
+        if (childName) {
+          const parts = childName.split(/\s+/);
+          payload.first_name = parts.shift() || '';
+          payload.last_name = parts.join(' ') || '';
+        }
+
+        // disable submit while sending
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
+
+        fetch('http://localhost:3000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(async res => {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Registration'; }
+          if (!res.ok) {
+            const data = await res.json().catch(()=>({}));
+            msg.style.color = 'crimson';
+            msg.textContent = data && data.error ? data.error : 'Server error — please try again later.';
+            return;
+          }
+          // success: show full-screen thank you overlay
+          const overlay = document.getElementById('successOverlay');
+          if (overlay) {
+            overlay.style.display = 'flex';
+            document.body.classList.add('no-scroll');
+            const btn = overlay.querySelector('#backHomeBtn');
+            if (btn) btn.focus();
+          } else {
+            msg.style.color = '#0a7';
+            msg.textContent = 'Registration submitted — we will reach out shortly.';
+          }
+          form.reset();
+        }).catch(err => {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Registration'; }
+          console.error(err);
+          msg.style.color = 'crimson';
+          msg.textContent = 'Network error — please try again.';
+        });
+      });
+    });
+  </script>
+  
+  <!-- Success overlay shown after valid submission -->
+  <div id="successOverlay" style="display:none;position:fixed;inset:0;background:#fff;z-index:2000;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
+    <div style="max-width:720px;text-align:center;">
+      <h1 style="color:#222;margin-bottom:8px;font-size:28px;">Thank you for your submission</h1>
+      <p style="color:#555;margin-bottom:20px;font-size:16px;">We will reach out soon.</p>
+      <button id="backHomeBtn" style="background:linear-gradient(135deg,#DC5F00,#ff7a1f);color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;">Back to Home</button>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const btn = document.getElementById('backHomeBtn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        // remove overlay and navigate home
+        const overlay = document.getElementById('successOverlay');
+        if (overlay) overlay.style.display = 'none';
+        document.body.classList.remove('no-scroll');
+        window.location.href = 'index.html';
+      });
+    })();
+  </script>
+</body>
+</html>
