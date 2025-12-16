@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gallery — Genesee Swift Track Club</title>
+  <link rel="stylesheet" href="../css-source/style.css">
+  <style>
+    /* Gallery-specific thumbnail styles (placeholders) */
+    .thumb-row { display:flex; gap:10px; justify-content:center; align-items:center; margin-top:14px; flex-wrap:wrap; }
+    .thumb-row.loading .thumb { display: none; }
+    /* Hide the toggle button while thumbnails are loading */
+    .thumb-row.loading .thumb-toggle { display: none !important; }
+    .thumb { width:64px; height:44px; object-fit:cover; cursor:pointer; border-radius:6px; border:2px solid transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .thumb.active { outline: 2px solid #DC5F00; transform: scale(1.02); }
+        .thumb.extra { display: inline-block; }
+        .thumb-toggle { display: none; align-items:center; gap:8px; cursor:pointer; border: none; background: transparent; color: #DC5F00; font-weight:600; padding:6px 8px; border-radius:6px; }
+        @media (max-width:900px) {
+            .thumb-row.loading .thumb { display: none; }
+            .thumb-row.collapsed .thumb.extra { display: none; }
+            .thumb-toggle { display: inline-flex; }
+        }
+    .gallery-wrapper { max-width:1100px; margin: 28px auto; padding: 0 16px; }
+    .slideshow-caption { text-align:center; margin-top:8px; color:#444; font-weight:500; }
+        .thumb-loader { display:flex; gap:10px; align-items:center; justify-content:center; width:100%; padding:8px 0; color:#555; font-weight:600; }
+        .thumb-loader .spinner { width:20px; height:20px; border-radius:50%; border:3px solid rgba(0,0,0,0.12); border-top-color:#DC5F00; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="navigation-bar">
+        <div class="header-row">
+            <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+            <button class="shopping-cart">
+                <img class="shopping-icon" src="../image-assets/shopping-bag.png" width="26px">
+            </button>
+            <p class="company-name-text">Genesee Swift Track Club</p>
+        </div>
+        <div class="navigation-menu">
+            <div class="nav-button-wrapper">
+                <div class="nav-button-header">
+                    <button class="nav-button" data-href="index.html">Home</button>
+                    <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+                </div>
+            </div>
+
+            <div class="nav-button-wrapper">
+                <div class="nav-button-header">
+                    <button class="nav-button" data-href='about.html'>About</button>
+                    <button class="expand-submenu-button">+</button>
+                </div>
+                <div class="nav-submenu">
+                    <button class="nav-sub-button" data-href="about.html#coaches">Coaches</button>
+                    <button class="nav-sub-button" data-href="about.html#contact">Contact Us</button>
+                </div>
+            </div>
+
+            <div class="nav-button-wrapper">
+                <div class="nav-button-header">
+                    <button class="nav-button" data-href='run-with-gstc.html'>Run With GSTC</button>
+                    <button class="expand-submenu-button">+</button>
+                </div>
+                <div class="nav-submenu">
+                        <button class="nav-sub-button" data-href='Offerings.html'>Offerings</button>
+                    <button class="nav-sub-button" data-href='register.html'>Register</button>
+                </div>
+            </div>
+
+            <div class="nav-button-wrapper">
+                <div class="nav-button-header">
+                    <button class="nav-button" data-href='upcoming-events.html'>Upcoming Events</button>
+                    <button class="expand-submenu-button" style="visibility: hidden;">+</button>
+                </div>
+            </div>
+
+            <div class="nav-button-wrapper">
+                <div class="nav-button-header">
+                    <button class="nav-button" data-href='gallery.html'>Gallery</button>
+                    <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+                </div>
+            </div>
+
+            <div class="nav-button-wrapper">
+                <div class="nav-button-header">
+                    <button class="nav-button" data-href="support.html">Support</button>
+                    <button class="expand-submenu-button">+</button> 
+                </div>
+                <div class="nav-submenu">
+                    <button class="nav-sub-button" data-href="support.html#donate">Donate</button>
+                    <button class="nav-sub-button" data-href="support.html#sponsors">Sponsorships</button>
+                </div>
+            </div>
+
+            <div class="nav-button-wrapper">
+                <div class="nav-button-header">
+                    <button class="nav-button" data-href="shop.html">Shop</button>
+                    <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="menu-backdrop" onclick="toggleMenu()"></div>
+
+  <div class="page-wrapper">
+    <div class="about-hero">
+      <h1>Gallery</h1>
+      <p>Click a thumbnail to jump to that image.</p>
+    </div>
+
+    <main class="about-content-wrapper gallery-wrapper">
+      <div class="slideshow-wrapper">
+
+        <div class="slideshow-container">
+          <!-- JS will inject slides here -->
+
+          <a class="prev" onclick="showSlides(slideIndex - 1)">&#10094;</a>
+          <a class="next" onclick="showSlides(slideIndex + 1)">&#10095;</a>
+        </div>
+
+                <!-- JS will inject thumbnails here -->
+                <div class="thumb-row loading" role="tablist" aria-label="Gallery thumbnails">
+                    <div class="thumb-loader" aria-live="polite" role="status">
+                        <div class="spinner" aria-hidden="true"></div>
+                        <span>Loading images</span>
+                    </div>
+                </div>
+
+      </div>
+    </main>
+
+    <footer style="text-align:center; padding:20px; font-size:14px; color:white; background:#DC5F00; border-top:3px solid white; margin-top:40px;">
+      &copy; 2025 Genesee Swift Track Club. All rights reserved.
+    </footer>
+  </div>
+
+  <script src="../js-source/nav-bar.js"></script>
+  <script src="../js-source/gallery-images.js"></script>
+  <script src="../js-source/slideshow.js"></script>
+
+</body>
+</html>
