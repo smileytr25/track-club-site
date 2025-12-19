@@ -4,77 +4,99 @@
         <link rel="stylesheet" href="../css-source/style.css">
     </head>
     <body>
-        <div class="navigation-bar">
-            <div class="header-row">
-                <button class="nav-toggle" onclick="toggleMenu()">☰</button>
-                <button class="shopping-cart">
-                    <img class="shopping-icon" src="../image-assets/shopping-bag.png" width="26px">
-                </button>
-                <p class="company-name-text">Genesee Swift Track Club</p>
-            </div>
-            <div class="navigation-menu">
-                <div class="nav-button-wrapper">
-                    <div class="nav-button-header">
-                        <button class="nav-button" data-href="index.html">Home</button>
-                        <button class="expand-submenu-button" style="visibility: hidden;">+</button>
-                    </div>
-                </div>
-
-                <div class="nav-button-wrapper">
-                    <div class="nav-button-header">
-                        <button class="nav-button" data-href='about.html'>About</button>
-                        <button class="expand-submenu-button">+</button>
-                    </div>
-                    <div class="nav-submenu">
-                        <button class="nav-sub-button" data-href="about.html#coaches">Coaches</button>
-                        <button class="nav-sub-button" data-href="about.html#contact">Contact Us</button>
-                    </div>
-                </div>
-
-                <div class="nav-button-wrapper">
-                    <div class="nav-button-header">
-                        <button class="nav-button" data-href='run-with-gstc.html'>Run With GSTC</button>
-                        <button class="expand-submenu-button">+</button>
-                    </div>
-                    <div class="nav-submenu">
-                        <button class="nav-sub-button" data-href="Offerings.html">Offerings</button>
-                        <button class="nav-sub-button" data-href="register.html">Register</button>
-                    </div>
-                </div>
-
-                <div class="nav-button-wrapper">
-                    <div class="nav-button-header">
-                        <button class="nav-button" data-href='upcoming-events.html'>Upcoming Events</button>
-                        <button class="expand-submenu-button" style="visibility: hidden;">+</button>
-                    </div>
-                </div>
-
-                <div class="nav-button-wrapper">
-                    <div class="nav-button-header">
-                       <button class="nav-button" data-href='gallery.html'>Gallery</button>
-                       <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
-                    </div>
-                </div>
-
-                <div class="nav-button-wrapper">
-                    <div class="nav-button-header">
-                        <button class="nav-button" data-href="support.html">Support</button>
-                        <button class="expand-submenu-button">+</button> 
-                    </div>
-                    <div class="nav-submenu">
-                        <button class="nav-sub-button" data-href="support.html#donate">Donate</button>
-                        <button class="nav-sub-button" data-href="support.html#sponsors">Sponsorships</button>
-                    </div>
-                </div>
-
-                <div class="nav-button-wrapper">
-                    <div class="nav-button-header">
-                        <button class="nav-button" data-href="shop.html">Shop</button>
-                        <button class="expand-submenu-button" style="visibility: hidden;">+</button> 
-                    </div>
-                </div>
-            </div>
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Home</div>
         </div>
+        <nav class="navigation-bar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <span class="logo-text">Genesee Swift</span>
+                </div>
+                
+                <button class="mobile-menu-toggle" onclick="toggleMenu()" aria-label="Toggle menu">
+                    <span class="hamburger"></span>
+                    <span class="hamburger"></span>
+                    <span class="hamburger"></span>
+                </button>
+
+                <div class="nav-content">
+                    <div class="nav-links">
+                        <a href="index.html" class="nav-link">Home</a>
+                        
+                        <div class="nav-dropdown">
+                            <button class="nav-link dropdown-trigger">
+                                About
+                                <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
+                                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="about.html" class="dropdown-item">About Us</a>
+                                <a href="about.html#coaches" class="dropdown-item">Coaches</a>
+                                <a href="about.html#contact" class="dropdown-item">Contact</a>
+                            </div>
+                        </div>
+
+                        <div class="nav-dropdown">
+                            <button class="nav-link dropdown-trigger">
+                                Programs
+                                <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
+                                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="run-with-gstc.html" class="dropdown-item">Run With GSTC</a>
+                                <a href="Offerings.html" class="dropdown-item">Offerings</a>
+                                <a href="register.html" class="dropdown-item">Register</a>
+                            </div>
+                        </div>
+
+                        <a href="upcoming-events.html" class="nav-link">Events</a>
+                        <a href="gallery.html" class="nav-link">Gallery</a>
+                        
+                        <div class="nav-dropdown">
+                            <button class="nav-link dropdown-trigger">
+                                Support
+                                <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
+                                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="support.html" class="dropdown-item">Support</a>
+                                <a href="support.html#donate" class="dropdown-item">Donate</a>
+                                <a href="support.html#sponsors" class="dropdown-item">Sponsorships</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nav-actions">
+                        <div class="cart-shop-container">
+                            <div class="shop-btn-wrapper">
+                                <a href="shop.html" class="nav-btn nav-btn-secondary">Shop<span class="mobile-cart-text"></span></a>
+                                <span class="cart-badge">0</span>
+                            </div>
+                            <div class="cart-preview">
+                                <div class="cart-preview-header">
+                                    <span>Cart</span>
+                                    <span class="cart-count">0</span>
+                                </div>
+                                <div class="cart-items"></div>
+                                <div class="cart-empty">Your cart is empty</div>
+                                <div class="cart-preview-footer">
+                                    <div class="cart-total">
+                                        <span class="cart-total-label">Total:</span>
+                                        <span class="cart-total-amount">$0.00</span>
+                                    </div>
+                                    <a href="cart.html" class="cart-view-btn">View Cart</a>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="register.html" class="nav-btn nav-btn-primary">Get Started</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
         <div class="menu-backdrop" onclick="toggleMenu()"></div>
         <div class="page-wrapper">
             <img class="team-picture" src="../image-assets/team-picture.jpeg">
@@ -183,6 +205,8 @@
             </footer>
         </div>
     </body>
+    <script src="../js-source/loading.js"></script>
+    <script src="../js-source/cart.js"></script>
     <script src="../js-source/nav-bar.js"></script>
     <script src="../js-source/slideshow.js"></script>
 </html>

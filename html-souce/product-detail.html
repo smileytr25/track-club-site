@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Product Details — Genesee Swift Track Club</title>
+  <link rel="stylesheet" href="../css-source/style.css">
+  <style>
+    .product-detail-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 24px 60px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #ff7a1f;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 32px;
+      transition: all 0.2s ease;
+    }
+
+    .back-link:hover {
+      gap: 12px;
+      text-shadow: 0 0 10px rgba(220, 95, 0, 0.5);
+    }
+
+    .product-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+
+    .product-gallery {
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+
+    .main-image {
+      width: 100%;
+      height: 500px;
+      background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(10, 10, 10, 0.8) 100%);
+      border: 1px solid rgba(220, 95, 0, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .main-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-placeholder-large {
+      color: rgba(220, 95, 0, 0.3);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .thumbnail-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .thumbnail {
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(10, 10, 10, 0.8) 100%);
+      border: 1px solid rgba(220, 95, 0, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .thumbnail:hover,
+    .thumbnail.active {
+      border-color: #ff7a1f;
+      box-shadow: 0 0 20px rgba(220, 95, 0, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-placeholder-thumb {
+      color: rgba(220, 95, 0, 0.3);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .product-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-badge-detail {
+      display: inline-block;
+      background: linear-gradient(135deg, #DC5F00 0%, #ff7a1f 100%);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: fit-content;
+      margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(220, 95, 0, 0.4);
+    }
+
+    .product-title {
+      font-size: 42px;
+      color: #ffffff;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 0%, #ff7a1f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .product-category-tag {
+      font-size: 14px;
+      color: #a1a1aa;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+
+    .product-price-large {
+      font-size: 48px;
+      font-weight: 700;
+      color: #ff7a1f;
+      margin-bottom: 32px;
+      text-shadow: 0 0 20px rgba(220, 95, 0, 0.5);
+    }
+
+    .product-description-full {
+      font-size: 16px;
+      color: #e4e4e7;
+      line-height: 1.8;
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(220, 95, 0, 0.2);
+    }
+
+    .product-features {
+      margin-bottom: 32px;
+    }
+
+    .product-features h3 {
+      font-size: 20px;
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .features-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features-list li {
+      padding: 12px 0;
+      color: #e4e4e7;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .features-list li:before {
+      content: "✓";
+      color: #ff7a1f;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .size-selector {
+      margin-bottom: 32px;
+    }
+
+    .size-selector h3 {
+      font-size: 16px;
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .size-options {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .size-option {
+      padding: 12px 24px;
+      background: rgba(26, 26, 26, 0.8);
+      border: 1px solid rgba(220, 95, 0, 0.3);
+      color: #e4e4e7;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .size-option:hover,
+    .size-option.selected {
+      background: rgba(220, 95, 0, 0.2);
+      border-color: #ff7a1f;
+      color: #ff7a1f;
+      box-shadow: 0 0 20px rgba(220, 95, 0, 0.4);
+    }
+
+    .quantity-selector {
+      margin-bottom: 32px;
+    }
+
+    .quantity-selector h3 {
+      font-size: 16px;
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .quantity-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(26, 26, 26, 0.8);
+      border: 1px solid rgba(220, 95, 0, 0.3);
+      color: #ff7a1f;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quantity-btn:hover {
+      background: rgba(220, 95, 0, 0.2);
+      border-color: #ff7a1f;
+      box-shadow: 0 0 20px rgba(220, 95, 0, 0.4);
+    }
+
+    .quantity-display {
+      font-size: 20px;
+      color: #ffffff;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .add-to-cart-btn {
+      flex: 1;
+      padding: 18px 32px;
+      background: linear-gradient(135deg, rgba(220, 95, 0, 0.9) 0%, rgba(255, 122, 31, 0.9) 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(220, 95, 0, 0.4);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .add-to-cart-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 122, 31, 1) 0%, rgba(220, 95, 0, 1) 100%);
+      box-shadow: 0 0 40px rgba(220, 95, 0, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .contact-btn {
+      padding: 18px 32px;
+      background: transparent;
+      border: 2px solid #ff7a1f;
+      color: #ff7a1f;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .contact-btn:hover {
+      background: rgba(220, 95, 0, 0.2);
+      box-shadow: 0 0 30px rgba(220, 95, 0, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .size-chart {
+      margin-top: 32px;
+      background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(10, 10, 10, 0.8) 100%);
+      border: 1px solid rgba(220, 95, 0, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .size-chart h3 {
+      font-size: 18px;
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .size-chart-icon {
+      color: #ff7a1f;
+      font-size: 20px;
+    }
+
+    .size-chart-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .size-chart-table th,
+    .size-chart-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(220, 95, 0, 0.1);
+    }
+
+    .size-chart-table th {
+      background: rgba(220, 95, 0, 0.1);
+      color: #ff7a1f;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .size-chart-table td {
+      color: #e4e4e7;
+      font-size: 14px;
+    }
+
+    .size-chart-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .size-chart-table tr:hover td {
+      background: rgba(220, 95, 0, 0.05);
+    }
+
+    @media (max-width: 968px) {
+      .product-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .product-gallery {
+        position: static;
+      }
+
+      .product-title {
+        font-size: 32px;
+      }
+
+      .product-price-large {
+        font-size: 36px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navigation-bar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <span class="logo-text">Genesee Swift</span>
+      </div>
+      
+      <button class="mobile-menu-toggle" onclick="toggleMenu()" aria-label="Toggle menu">
+        <span class="hamburger"></span>
+        <span class="hamburger"></span>
+        <span class="hamburger"></span>
+      </button>
+
+      <div class="nav-content">
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Home</a>
+          
+          <div class="nav-dropdown">
+            <button class="nav-link dropdown-trigger">
+              About
+              <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="dropdown-menu">
+              <a href="about.html" class="dropdown-item">About Us</a>
+              <a href="about.html#coaches" class="dropdown-item">Coaches</a>
+              <a href="about.html#contact" class="dropdown-item">Contact</a>
+            </div>
+          </div>
+
+          <div class="nav-dropdown">
+            <button class="nav-link dropdown-trigger">
+              Programs
+              <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="dropdown-menu">
+              <a href="run-with-gstc.html" class="dropdown-item">Run With GSTC</a>
+              <a href="Offerings.html" class="dropdown-item">Offerings</a>
+              <a href="register.html" class="dropdown-item">Register</a>
+            </div>
+          </div>
+
+          <a href="upcoming-events.html" class="nav-link">Events</a>
+          <a href="gallery.html" class="nav-link">Gallery</a>
+          
+          <div class="nav-dropdown">
+            <button class="nav-link dropdown-trigger">
+              Support
+              <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="dropdown-menu">
+              <a href="support.html" class="dropdown-item">Support</a>
+              <a href="support.html#donate" class="dropdown-item">Donate</a>
+              <a href="support.html#sponsors" class="dropdown-item">Sponsorships</a>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div class="nav-actions">
+          <div class="cart-shop-container">
+            <div class="shop-btn-wrapper">
+              <a href="shop.html" class="nav-btn nav-btn-secondary">Shop<span class="mobile-cart-text"></span></a>
+              <span class="cart-badge">0</span>
+            </div>
+            <div class="cart-preview">
+              <div class="cart-preview-header">
+                <span>Cart</span>
+                <span class="cart-count">0</span>
+              </div>
+              <div class="cart-items"></div>
+              <div class="cart-empty">Your cart is empty</div>
+              <div class="cart-preview-footer">
+                <div class="cart-total">
+                  <span class="cart-total-label">Total:</span>
+                  <span class="cart-total-amount">$0.00</span>
+                </div>
+                <a href="cart.html" class="cart-view-btn">View Cart</a>
+              </div>
+            </div>
+          </div>
+          <a href="register.html" class="nav-btn nav-btn-primary">Get Started</a>
+        </div>
+    </div>
+  </nav>
+
+  <div class="menu-backdrop" onclick="toggleMenu()"></div>
+
+  <div class="page-wrapper">
+    <div class="product-detail-container">
+      <a href="shop.html" class="back-link">
+        ← Back to Shop
+      </a>
+
+      <div class="product-detail-grid">
+        <!-- Product Gallery -->
+        <div class="product-gallery">
+          <div class="main-image" id="mainImage">
+            <div class="image-placeholder-large">MAIN PRODUCT IMAGE</div>
+          </div>
+          <div class="thumbnail-grid">
+            <div class="thumbnail active">
+              <div class="image-placeholder-thumb">IMAGE 1</div>
+            </div>
+            <div class="thumbnail">
+              <div class="image-placeholder-thumb">IMAGE 2</div>
+            </div>
+            <div class="thumbnail">
+              <div class="image-placeholder-thumb">IMAGE 3</div>
+            </div>
+            <div class="thumbnail">
+              <div class="image-placeholder-thumb">IMAGE 4</div>
+            </div>
+          </div>
+
+          <!-- Size Chart -->
+          <div class="size-chart" id="sizeChart">
+            <h3><span class="size-chart-icon">📏</span> Size Chart</h3>
+            <table class="size-chart-table">
+              <thead>
+                <tr>
+                  <th>Size</th>
+                  <th>Chest (in)</th>
+                  <th>Waist (in)</th>
+                  <th>Length (in)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>XS</strong></td>
+                  <td>32-34</td>
+                  <td>26-28</td>
+                  <td>26</td>
+                </tr>
+                <tr>
+                  <td><strong>S</strong></td>
+                  <td>35-37</td>
+                  <td>29-31</td>
+                  <td>27</td>
+                </tr>
+                <tr>
+                  <td><strong>M</strong></td>
+                  <td>38-40</td>
+                  <td>32-34</td>
+                  <td>28</td>
+                </tr>
+                <tr>
+                  <td><strong>L</strong></td>
+                  <td>41-43</td>
+                  <td>35-37</td>
+                  <td>29</td>
+                </tr>
+                <tr>
+                  <td><strong>XL</strong></td>
+                  <td>44-46</td>
+                  <td>38-40</td>
+                  <td>30</td>
+                </tr>
+                <tr>
+                  <td><strong>XXL</strong></td>
+                  <td>47-49</td>
+                  <td>41-43</td>
+                  <td>31</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="product-details">
+          <div class="product-badge-detail" id="productBadge">New</div>
+          <h1 class="product-title" id="productTitle">Official Team Jersey</h1>
+          <div class="product-category-tag" id="productCategory">Apparel</div>
+          <div class="product-price-large" id="productPrice">$45</div>
+          
+          <div class="product-description-full" id="productDescription">
+            <p>
+              Our official team jersey is designed for peak performance on the track. Made with advanced moisture-wicking 
+              technology, this jersey keeps you cool and dry during intense training sessions and competitions. The 
+              lightweight, breathable fabric allows for maximum mobility while the official team colors and logo show 
+              your Swift pride.
+            </p>
+            <p style="margin-top: 16px;">
+              Perfect for practices, meets, and representing Genesee Swift Track Club at any event. Available in youth 
+              and adult sizes.
+            </p>
+          </div>
+
+          <div class="product-features">
+            <h3>Features</h3>
+            <ul class="features-list">
+              <li>Moisture-wicking performance fabric</li>
+              <li>Lightweight and breathable construction</li>
+              <li>Official team colors and embroidered logo</li>
+              <li>Athletic fit for maximum mobility</li>
+              <li>Durable construction for repeated use</li>
+              <li>Machine washable</li>
+            </ul>
+          </div>
+
+          <div class="size-selector">
+            <h3>Select Size</h3>
+            <div class="size-options">
+              <div class="size-option" data-size="XS">XS</div>
+              <div class="size-option" data-size="S">S</div>
+              <div class="size-option selected" data-size="M">M</div>
+              <div class="size-option" data-size="L">L</div>
+              <div class="size-option" data-size="XL">XL</div>
+              <div class="size-option" data-size="XXL">XXL</div>
+            </div>
+          </div>
+
+          <div class="quantity-selector">
+            <h3>Quantity</h3>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="decreaseQuantity()">−</button>
+              <div class="quantity-display" id="quantity">1</div>
+              <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+            <a href="mailto:info@geneseeswift.org?subject=Product%20Inquiry" class="contact-btn">Contact Us</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; font-size: 14px; color: white; background-color: #DC5F00; border-top: solid white 3px; margin-top: 60px;">
+      &copy; 2025 Genesee Swift Track Club. All rights reserved.
+    </footer>
+  </div>
+
+  <script src="../js-source/loading.js"></script>
+  <script src="../js-source/products.js"></script>
+  <script src="../js-source/cart.js"></script>
+  <script src="../js-source/nav-bar.js"></script>
+  <script>
+    // Load product data based on URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    
+    if (!productId) {
+      window.location.href = 'shop.html';
+    }
+
+    const product = getProductById(productId);
+    
+    if (!product) {
+      alert('Product not found');
+      window.location.href = 'shop.html';
+    }
+
+    // Populate product details
+    document.getElementById('productTitle').textContent = product.name;
+    document.getElementById('productPrice').textContent = `$${product.price}`;
+    document.getElementById('productCategory').textContent = product.category.charAt(0).toUpperCase() + product.category.slice(1);
+    
+    const badgeElement = document.getElementById('productBadge');
+    if (product.badge) {
+      badgeElement.textContent = product.badge;
+      badgeElement.style.display = 'inline-block';
+    } else {
+      badgeElement.style.display = 'none';
+    }
+    
+    document.getElementById('productDescription').innerHTML = `<p>${product.fullDescription}</p>`;
+    
+    document.querySelector('.features-list').innerHTML = product.features.map(feature => `<li>${feature}</li>`).join('');
+    
+    document.querySelector('.size-options').innerHTML = product.sizes.map((size, index) => 
+      `<div class="size-option ${index === Math.floor(product.sizes.length / 2) ? 'selected' : ''}" data-size="${size}">${size}</div>`
+    ).join('');
+    
+    // Size selector
+    document.querySelectorAll('.size-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+
+    // Size chart - hide for non-apparel
+    const sizeChartToggle = document.getElementById('sizeChartToggle');
+    const sizeChart = document.getElementById('sizeChart');
+    if (product.category !== 'apparel' && sizeChartToggle) {
+      sizeChartToggle.style.display = 'none';
+      sizeChart.style.display = 'none';
+    }
+
+    // Thumbnail gallery
+    document.querySelectorAll('.thumbnail').forEach((thumb, index) => {
+      thumb.addEventListener('click', function() {
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Quantity controls
+    let quantity = 1;
+    
+    function increaseQuantity() {
+      quantity++;
+      document.getElementById('quantity').textContent = quantity;
+    }
+
+    function decreaseQuantity() {
+      if (quantity > 1) {
+        quantity--;
+        document.getElementById('quantity').textContent = quantity;
+      }
+    }
+
+    // Add to cart
+    function addToCart() {
+      const selectedSize = document.querySelector('.size-option.selected');
+      if (!selectedSize) {
+        alert('Please select a size');
+        return;
+      }
+
+      const cartProduct = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        size: selectedSize.dataset.size,
+        quantity: quantity,
+        category: product.category
+      };
+
+      cart.addItem(cartProduct);
+      
+      // Show success notification
+      const btn = document.querySelector('.add-to-cart-btn');
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Added to Cart';
+      btn.style.backgroundColor = '#22c55e';
+      
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.backgroundColor = '';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
