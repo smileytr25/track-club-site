@@ -85,5 +85,48 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   });
+  
+  // Desktop: allow click-to-toggle persistent dropdowns so they remain
+  // visible even when hovering other nav-links. Click again or click outside
+  // to close. This does not affect mobile behavior (<=1200px).
+  document.querySelectorAll('.dropdown-trigger').forEach(trigger => {
+    trigger.addEventListener('click', function(e) {
+      if (window.innerWidth > 1200) {
+        e.preventDefault();
+        const dropdown = this.closest('.nav-dropdown');
+        const isOpen = dropdown.classList.toggle('open');
+        if (isOpen) {
+          dropdown.setAttribute('data-sticky', 'true');
+        } else {
+          dropdown.removeAttribute('data-sticky');
+        }
+      }
+    });
+  });
+
+  // Clicking outside closes any sticky open dropdowns (desktop only)
+  document.addEventListener('click', function(e) {
+    if (window.innerWidth > 1200) {
+      const inside = e.target.closest('.nav-dropdown');
+      if (!inside) {
+        document.querySelectorAll('.nav-dropdown').forEach(d => {
+          if (d.hasAttribute('data-sticky')) {
+            d.classList.remove('open');
+            d.removeAttribute('data-sticky');
+          }
+        });
+      }
+    }
+  });
+
+  // Ensure programmatic opens are cleared when switching to mobile
+  window.addEventListener('resize', function() {
+    if (window.innerWidth <= 1200) {
+      document.querySelectorAll('.nav-dropdown').forEach(d => {
+        d.classList.remove('open');
+        d.removeAttribute('data-sticky');
+      });
+    }
+  });
 });
 

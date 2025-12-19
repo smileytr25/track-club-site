@@ -224,6 +224,29 @@ body.no-scroll {
   transform: translateY(0);
 }
 
+/* Ensure mobile-open state overrides hover states */
+@media (max-width: 1200px) {
+  .nav-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+}
+
+/* Programmatic open state: keep dropdown visible even when pointer moves
+   to other nav-links (used by JS to make the menu 'sticky' after click) */
+.nav-dropdown.open .dropdown-arrow {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+.nav-dropdown.open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
 .dropdown-item {
   display: block;
   padding: 10px 16px;
@@ -517,7 +540,7 @@ body.no-scroll {
   visibility: hidden;
   pointer-events: none;
   z-index: 998;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
 .menu-backdrop.menu-active {
@@ -613,14 +636,22 @@ body.no-scroll {
   }
 
   .nav-dropdown .dropdown-menu {
-    display: none;
-  }
-
-  .nav-dropdown.mobile-open .dropdown-menu {
     display: flex;
     flex-direction: column;
     gap: 4px;
     margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  .nav-dropdown.mobile-open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    max-height: 500px;
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0s linear 0s;
   }
 
   .nav-actions {
@@ -937,7 +968,7 @@ body.no-scroll {
 
 .social-site-title {
   position: absolute;
-  top: 75%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
