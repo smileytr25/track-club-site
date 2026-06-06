@@ -682,19 +682,20 @@ body.no-scroll {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    margin-top: 8px;
+    margin-top: 0;
     opacity: 0;
     visibility: hidden;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0s linear 0.3s;
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0s linear 0.3s, margin-top 0.3s ease;
   }
 
   .nav-dropdown.mobile-open .dropdown-menu {
     opacity: 1;
     visibility: visible;
     max-height: 500px;
-    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0s linear 0s;
+    margin-top: 8px;
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0s linear 0s, margin-top 0.3s ease;
   }
 
   .nav-actions {
@@ -708,8 +709,25 @@ body.no-scroll {
     margin-bottom: 12px;
   }
 
+  .cart-shop-container .cart-preview {
+    top: calc(100% + 4px);
+    right: auto;
+    left: 0;
+    width: 100%;
+    max-height: 500px;
+  }
+
+  .cart-shop-container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 8px;
+  }
+
   .cart-shop-container:hover + .nav-btn-primary {
-    display: none;
+    visibility: hidden;
   }
 
   .shop-btn-wrapper {
@@ -1057,7 +1075,7 @@ body.no-scroll {
   padding: 100px 0 60px 0;
   text-align: center;
   color: white;
-  margin-top: 70px;
+  margin-top: 0;
   box-shadow: 0 0 40px rgba(220, 95, 0, 0.4);
   border-bottom: 1px solid rgba(220, 95, 0, 0.5);
 }
@@ -1559,7 +1577,7 @@ body.no-scroll {
   padding: 100px 0 60px 0;
   text-align: center;
   color: white;
-  margin-top: 70px;
+  margin-top: 0;
   box-shadow: 0 0 40px rgba(220, 95, 0, 0.4);
   border-bottom: 1px solid rgba(220, 95, 0, 0.5);
 }
@@ -1720,7 +1738,7 @@ body.no-scroll {
 
 .training-focus {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -1753,6 +1771,13 @@ body.no-scroll {
   color: #a1a1aa;
   font-size: 15px;
   line-height: 1.6;
+}
+
+@media (max-width: 1150px) {
+  .training-focus {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
 }
 
 .coaches-grid { 
@@ -1842,7 +1867,7 @@ body.no-scroll {
   padding:56px 16px 24px; 
   background: linear-gradient(135deg, rgba(220, 95, 0, 0.95) 0%, rgba(255, 122, 31, 0.95) 100%);
   color:#fff;  
-  margin:70px auto 0px auto;
+  margin:0 auto;
   box-shadow: 0 0 40px rgba(220, 95, 0, 0.4);
   border-bottom: 1px solid rgba(220, 95, 0, 0.5);
 }
@@ -1906,6 +1931,15 @@ body.no-scroll {
 .small { 
   font-size:14px; 
   color:#71717a;
+}
+
+.flyer .small a {
+  color: #ff7a1f;
+  text-decoration: none;
+}
+
+.flyer .small a:hover {
+  color: #ffffff;
 }
 
 .donate-short { 
