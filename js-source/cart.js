@@ -6,16 +6,23 @@ class ShoppingCart {
     this.timeoutTimer = null;
     this.warningTimer = null;
     
-    this.checkSession();
     this.items = this.loadCart();
+    this.checkSession();
     this.updateCartUI();
-    this.startSessionTimers();
+    if (this.getTotalItems() > 0) {
+      this.startSessionTimers();
+    }
   }
 
   // Check if session is still valid
   checkSession() {
     const sessionStart = sessionStorage.getItem('cartSessionStart');
     const now = Date.now();
+
+    if (this.getTotalItems() === 0) {
+      sessionStorage.removeItem('cartSessionStart');
+      return;
+    }
     
     if (sessionStart) {
       const elapsed = now - parseInt(sessionStart);
@@ -24,7 +31,7 @@ class ShoppingCart {
         this.clearSession();
       }
     } else {
-      // First visit, set session start time
+      // Existing cart without a timer, start tracking it now.
       sessionStorage.setItem('cartSessionStart', now.toString());
     }
   }
@@ -34,6 +41,8 @@ class ShoppingCart {
     // Clear any existing timers
     if (this.timeoutTimer) clearTimeout(this.timeoutTimer);
     if (this.warningTimer) clearTimeout(this.warningTimer);
+
+    if (this.getTotalItems() === 0) return;
 
     const sessionStart = sessionStorage.getItem('cartSessionStart');
     if (!sessionStart) return;
@@ -60,6 +69,8 @@ class ShoppingCart {
 
   // Show session warning modal
   showSessionWarning() {
+    if (this.getTotalItems() === 0 || document.getElementById('sessionWarningModal')) return;
+
     const modal = document.createElement('div');
     modal.id = 'sessionWarningModal';
     modal.style.cssText = `
@@ -138,6 +149,8 @@ class ShoppingCart {
 
   // Extend session
   extendSession() {
+    if (this.getTotalItems() === 0) return;
+
     const now = Date.now();
     sessionStorage.setItem('cartSessionStart', now.toString());
     this.startSessionTimers();
@@ -145,6 +158,8 @@ class ShoppingCart {
 
   // Handle session timeout
   handleSessionTimeout() {
+    if (this.getTotalItems() === 0) return;
+
     this.clearSession();
     alert('Your cart session has expired. Your cart has been cleared.');
   }
@@ -191,6 +206,10 @@ class ShoppingCart {
 
     this.saveCart();
     this.updateCartUI();
+    if (!sessionStorage.getItem('cartSessionStart')) {
+      sessionStorage.setItem('cartSessionStart', Date.now().toString());
+    }
+    this.startSessionTimers();
     this.animateCartBadge();
     return true;
   }
@@ -202,6 +221,9 @@ class ShoppingCart {
     );
     this.saveCart();
     this.updateCartUI();
+    if (this.getTotalItems() === 0) {
+      this.clearSession();
+    }
   }
 
   // Update item quantity
@@ -233,10 +255,11 @@ class ShoppingCart {
   // Clear cart
   clearCart() {
     this.items = [];
-    this.saveCart();
+    sessionStorage.removeItem('geneseeSwiftCart');
+    sessionStorage.removeItem('cartSessionStart');
+    if (this.timeoutTimer) clearTimeout(this.timeoutTimer);
+    if (this.warningTimer) clearTimeout(this.warningTimer);
     this.updateCartUI();
-    // Reset session timer when cart is manually cleared
-    this.extendSession();
   }
 
   // Animate cart badge
