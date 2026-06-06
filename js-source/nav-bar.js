@@ -9,9 +9,13 @@ function toggleMenu() {
 
   if (!navContent) return; // Safety check
 
+  navContent.classList.add('menu-animating');
   const isActive = navContent.classList.toggle('menu-active');
   backdrop.classList.toggle('menu-active', isActive);
   body.classList.toggle('no-scroll', isActive);
+  window.setTimeout(() => {
+    navContent.classList.remove('menu-animating');
+  }, 300);
   
   // Animate hamburger to X
   if (hamburger) {
@@ -25,6 +29,29 @@ function toggleMenu() {
       hamburgers[1].style.opacity = '1';
       hamburgers[2].style.transform = '';
     }
+  }
+}
+
+function closeMobileMenu() {
+  const navContent = document.querySelector('.nav-content');
+  const backdrop = document.querySelector('.menu-backdrop');
+  const body = document.body;
+  const hamburger = document.querySelector('.mobile-menu-toggle');
+
+  if (navContent) {
+    navContent.classList.remove('menu-active', 'menu-animating');
+  }
+  if (backdrop) {
+    backdrop.classList.remove('menu-active');
+  }
+  body.classList.remove('no-scroll');
+
+  if (hamburger) {
+    const hamburgers = hamburger.querySelectorAll('.hamburger');
+    hamburgers.forEach(bar => {
+      bar.style.transform = '';
+      bar.style.opacity = '';
+    });
   }
 }
 
@@ -81,44 +108,11 @@ document.addEventListener('DOMContentLoaded', function() {
       // Also close mobile menu if open
       const navContent = document.querySelector('.nav-content');
       if (navContent && navContent.classList.contains('menu-active')) {
-        toggleMenu();
+        closeMobileMenu();
       }
     }
   });
   
-  // Desktop: allow click-to-toggle persistent dropdowns so they remain
-  // visible even when hovering other nav-links. Click again or click outside
-  // to close. This does not affect mobile behavior (<=1200px).
-  document.querySelectorAll('.dropdown-trigger').forEach(trigger => {
-    trigger.addEventListener('click', function(e) {
-      if (window.innerWidth > 1200) {
-        e.preventDefault();
-        const dropdown = this.closest('.nav-dropdown');
-        const isOpen = dropdown.classList.toggle('open');
-        if (isOpen) {
-          dropdown.setAttribute('data-sticky', 'true');
-        } else {
-          dropdown.removeAttribute('data-sticky');
-        }
-      }
-    });
-  });
-
-  // Clicking outside closes any sticky open dropdowns (desktop only)
-  document.addEventListener('click', function(e) {
-    if (window.innerWidth > 1200) {
-      const inside = e.target.closest('.nav-dropdown');
-      if (!inside) {
-        document.querySelectorAll('.nav-dropdown').forEach(d => {
-          if (d.hasAttribute('data-sticky')) {
-            d.classList.remove('open');
-            d.removeAttribute('data-sticky');
-          }
-        });
-      }
-    }
-  });
-
   // Ensure programmatic opens are cleared when switching to mobile
   window.addEventListener('resize', function() {
     if (window.innerWidth <= 1200) {
@@ -129,4 +123,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-

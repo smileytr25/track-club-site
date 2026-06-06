@@ -58,6 +58,11 @@
   box-sizing: border-box;
 }
 
+html {
+  background: #0a0a0a;
+  overscroll-behavior-y: none;
+}
+
 body {
   background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
   margin: 0;
@@ -89,20 +94,22 @@ body.no-scroll {
   right: 0;
   z-index: 1000;
   background: rgba(10, 10, 10, 0.95);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(220, 95, 0, 0.2);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transform: translateZ(0);
 }
 
 .nav-container {
-  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 70px;
-  gap: 80px;
+  gap: 24px;
 }
 
 .nav-logo {
@@ -173,6 +180,12 @@ body.no-scroll {
   align-items: center;
   gap: 6px;
   letter-spacing: 0.3px;
+}
+
+.navigation-bar .nav-link:visited,
+.navigation-bar .nav-link:focus,
+.navigation-bar .nav-link:active {
+  color: #e4e4e7;
 }
 
 .nav-link:hover {
@@ -550,8 +563,18 @@ body.no-scroll {
 }
 
 /* Mobile Navigation */
-@media (min-width: 1200px) {
+@media (min-width: 1201px) {
+  .nav-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .nav-logo {
+    justify-self: start;
+  }
+
   .nav-content {
+    display: contents;
     position: static;
     transform: none;
     flex-direction: row;
@@ -565,6 +588,16 @@ body.no-scroll {
     overflow: visible;
     width: auto;
     max-width: none;
+  }
+
+  .nav-links {
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  .nav-actions {
+    grid-column: 3;
+    justify-self: end;
   }
 }
 
@@ -590,8 +623,12 @@ body.no-scroll {
     min-height: calc(100vh - 70px);
     overflow-y: auto;
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    transition: none;
     justify-content: flex-start;
+  }
+
+  .nav-content.menu-animating {
+    transition: transform 0.3s ease;
   }
 
   .nav-content.menu-active {
@@ -780,11 +817,9 @@ body.no-scroll {
   width: 100%;
   height: 100%;
   min-height: 650px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
   border-radius: 16px;
   overflow: hidden;
   box-sizing: border-box;
-  border: 1px solid rgba(220, 95, 0, 0.3);
   background: rgba(10, 10, 10, 0.5);
 }
 
@@ -824,8 +859,7 @@ body.no-scroll {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 0 8px 8px 0;
   user-select: none;
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
+  background-color: transparent;
 }
 
 .next {
