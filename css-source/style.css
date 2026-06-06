@@ -240,8 +240,8 @@ body.no-scroll {
 /* Ensure mobile-open state overrides hover states */
 @media (max-width: 1200px) {
   .nav-dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
+    opacity: 0;
+    visibility: hidden;
     transform: none;
   }
 }
@@ -619,7 +619,7 @@ body.no-scroll {
     padding: 24px;
     gap: 16px;
     border-right: 1px solid rgba(220, 95, 0, 0.3);
-    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
     min-height: calc(100vh - 70px);
     overflow-y: auto;
     transform: translateX(-100%);
@@ -633,6 +633,7 @@ body.no-scroll {
 
   .nav-content.menu-active {
     transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
   }
 
   .nav-links {
@@ -662,6 +663,11 @@ body.no-scroll {
     margin-top: 0;
     margin-left: 16px;
     padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
   .nav-dropdown:hover .dropdown-arrow {
@@ -700,6 +706,10 @@ body.no-scroll {
   .cart-shop-container {
     width: 100%;
     margin-bottom: 12px;
+  }
+
+  .cart-shop-container:hover + .nav-btn-primary {
+    display: none;
   }
 
   .shop-btn-wrapper {
@@ -1109,12 +1119,6 @@ body.no-scroll {
   contain: paint;
 }
 
-.about-text-card:hover {
-  transform: translate3d(0, -8px, 0);
-  box-shadow: 0 12px 40px rgba(220, 95, 0, 0.4);
-  border: 1px solid rgba(220, 95, 0, 0.6);
-}
-
 .about-text-card h2 {
   color: #ff7a1f;
   font-size: 32px;
@@ -1166,7 +1170,7 @@ body.no-scroll {
   z-index: 1;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   filter: brightness(0.95) contrast(1.05);
   transform: translateZ(0);
   will-change: transform;
@@ -1287,14 +1291,7 @@ body.no-scroll {
 }
 
 .info-detail-card {
-  background: rgba(26, 26, 26, 0.6);
-  backdrop-filter: blur(8px);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  border-left: 4px solid rgba(220, 95, 0, 0.8);
-  transition: all 0.3s ease;
-  will-change: transform;
+  padding: 0;
 }
 
 /* Responsive breakpoints */
@@ -1368,6 +1365,10 @@ body.no-scroll {
 
   .info-cards-grid {
     grid-template-columns: 1fr;
+  }
+
+  .location-section {
+    display: none;
   }
 }
 @media (max-width: 700px) {
@@ -1530,8 +1531,8 @@ body.no-scroll {
 }
 
 .info-detail-card:hover {
-  transform: translateX(6px);
-  box-shadow: 0 6px 24px rgba(220, 95, 0, 0.4);
+  transform: none;
+  box-shadow: none;
 }
 
 .info-detail-card h3 {
@@ -1769,16 +1770,60 @@ body.no-scroll {
   flex: 1; 
 }
 
+.coach-roster {
+  max-width: 980px;
+  margin: 28px auto 0;
+  padding: 0 16px;
+}
+
+.coach-profile {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.35fr) minmax(0, 1fr);
+  gap: 36px;
+  padding: 34px 0;
+  border-top: 1px solid rgba(220, 95, 0, 0.28);
+}
+
+.coach-profile:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.coach-profile-heading h2 {
+  color: #ff7a1f;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 8px;
+  text-shadow: 0 0 15px rgba(220, 95, 0, 0.28);
+}
+
+.coach-profile-heading span {
+  color: #e4e4e7;
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.coach-profile-body p {
+  color: #a1a1aa;
+  font-size: 17px;
+  line-height: 1.75;
+  margin: 0 0 16px;
+}
+
+.coach-profile-body p:last-child {
+  margin-bottom: 0;
+}
+
 .coach-photo-slot {
-  background: rgba(26, 26, 26, 0.8);
-  border: 1px solid rgba(220, 95, 0, 0.3);
-  border-radius: 12px;
-  padding: 0; /* remove inner padding so image fills the slot */
   display: block;
   width: 100%;
   aspect-ratio: 696 / 464; /* maintain 3:2 ratio */
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  margin: 6px 0;
 }
     
 .coach-photo-slot img {
@@ -1916,10 +1961,6 @@ body.no-scroll {
     min-height: 260px;
   }
 
-  .location-section {
-    display: none;
-  }
-
   .about-hero h1 {
     font-size: 36px;
   }
@@ -1934,19 +1975,22 @@ body.no-scroll {
 }
 
 @media (max-width:900px) { 
-  .coaches-grid { 
-    display: block; 
-    padding: 0 12px; 
-  } 
-  
-  .coaches-grid > .col-left, .coaches-grid > .col-right { 
-    display:block; 
-  } 
+  .coach-roster {
+    padding: 0 12px;
+  }
 
-  /* Add vertical spacing when stacked (mobile) so cards/photos don't touch */
-  .coaches-grid .about-text-card,
-  .coaches-grid .coach-photo-slot {
-    margin-bottom: 20px;
+  .coach-profile {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 28px 0;
+  }
+
+  .coach-profile-heading h2 {
+    font-size: 24px;
+  }
+
+  .coach-profile-body p {
+    font-size: 16px;
   }
 }
 
