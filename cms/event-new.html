@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>New Event - Genesee Swift CMS</title>
+  <title>Event Editor - Genesee Swift CMS</title>
   <link rel="stylesheet" href="css-source/cms.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <header class="cms-header">
       <div>
         <p class="brand-kicker">Genesee Swift CMS</p>
-        <h1>New Event</h1>
+        <h1 id="pageTitle">New Event</h1>
       </div>
       <a class="cms-link-button" href="/cms/events.html">Back to Events</a>
     </header>
@@ -45,7 +45,7 @@
 
           <div class="form-field">
             <label for="eventStatus">Status</label>
-            <select id="eventStatus" name="eventStatus">
+            <select id="eventStatus" name="status">
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
@@ -56,7 +56,7 @@
             <textarea id="eventDescription" name="description" rows="5" placeholder="Short public-facing event summary"></textarea>
           </div>
 
-          <button type="submit">Save Event</button>
+          <button type="submit" id="saveButton">Save Event</button>
         </form>
       </article>
     </section>
@@ -69,18 +69,59 @@
 
     const form = document.getElementById('eventForm');
     const message = document.getElementById('eventMessage');
+    const pageTitle = document.getElementById('pageTitle');
+    const saveButton = document.getElementById('saveButton');
     const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get('id');
+    const isEditing = Boolean(eventId);
+
+    function setMessage(text, type = '') {
+      message.textContent = text;
+      message.className = `auth-message${type ? ` ${type}` : ''}`;
+    }
+
+    function normalizeTime(value) {
+      return value ? value.slice(0, 5) : '';
+    }
+
+    async function loadEvent() {
+      if (!isEditing) return;
+
+      pageTitle.textContent = 'Edit Event';
+      saveButton.textContent = 'Update Event';
+      setMessage('Loading event...');
+
+      try {
+        const response = await fetch(`${apiBase}/api/events/cms/${eventId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load event.');
+        }
+
+        form.elements.title.value = data.event.title || '';
+        form.elements.eventDate.value = data.event.eventDate || '';
+        form.elements.eventTime.value = normalizeTime(data.event.eventTime);
+        form.elements.location.value = data.event.location || '';
+        form.elements.status.value = data.event.status || 'draft';
+        form.elements.description.value = data.event.description || '';
+        setMessage('');
+      } catch (error) {
+        setMessage(error.message, 'error');
+        saveButton.disabled = true;
+      }
+    }
 
     form.addEventListener('submit', async event => {
       event.preventDefault();
 
       const payload = Object.fromEntries(new FormData(form).entries());
-      message.textContent = 'Saving event...';
-      message.className = 'auth-message';
+      setMessage(isEditing ? 'Updating event...' : 'Saving event...');
 
       try {
-        const response = await fetch(`${apiBase}/api/events/cms`, {
-          method: 'POST',
+        const response = await fetch(`${apiBase}/api/events/cms${isEditing ? `/${eventId}` : ''}`, {
+          method: isEditing ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
@@ -90,16 +131,16 @@
           throw new Error(data.error || 'Unable to save event.');
         }
 
-        message.textContent = 'Event saved. Returning to event list...';
-        message.className = 'auth-message success';
+        setMessage('Event saved. Returning to event list...', 'success');
         window.setTimeout(() => {
           window.location.href = '/cms/events.html';
         }, 700);
       } catch (error) {
-        message.textContent = error.message;
-        message.className = 'auth-message error';
+        setMessage(error.message, 'error');
       }
     });
+
+    loadEvent();
   </script>
 </body>
 </html>

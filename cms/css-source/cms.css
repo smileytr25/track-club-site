@@ -500,13 +500,16 @@ button:disabled {
   background: rgba(var(--gstc-bg-rgb), 0.46);
   border: var(--gstc-border-brand-subtle);
   border-radius: var(--gstc-radius-lg);
+  cursor: pointer;
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
 }
 
-.cms-event-card:hover {
+.cms-event-card:hover,
+.cms-event-card:focus-visible {
   transform: translateY(-2px);
   border-color: rgba(var(--gstc-brand-rgb), 0.55);
   box-shadow: var(--gstc-shadow-brand-sm);
+  outline: none;
 }
 
 .cms-event-card h2 {

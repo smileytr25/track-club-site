@@ -74,6 +74,20 @@
       }).format(new Date(2000, 0, 1, hours, minutes));
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[character]));
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, '&#96;');
+    }
+
     function renderEvents() {
       if (events.length === 0) {
         list.innerHTML = `
@@ -86,11 +100,11 @@
       }
 
       list.innerHTML = events.map(event => `
-        <article class="cms-event-card" data-title="${event.title}" data-location="${event.location}" data-date="${event.eventDate}" data-status="${event.status}">
+        <article class="cms-event-card" tabindex="0" role="link" aria-label="Edit ${escapeAttribute(event.title)}" data-id="${escapeAttribute(event.id)}" data-title="${escapeAttribute(event.title)}" data-location="${escapeAttribute(event.location)}" data-date="${escapeAttribute(event.eventDate)}" data-status="${escapeAttribute(event.status)}">
           <div>
-            <p class="event-status ${event.status}">${event.status}</p>
-            <h2>${event.title}</h2>
-            <p>${event.location}</p>
+            <p class="event-status ${escapeAttribute(event.status)}">${escapeHtml(event.status)}</p>
+            <h2>${escapeHtml(event.title)}</h2>
+            <p>${escapeHtml(event.location)}</p>
           </div>
           <div class="event-meta">
             <span>${formatDate(event.eventDate)}</span>
@@ -144,6 +158,21 @@
 
     searchInput.addEventListener('input', updateEvents);
     sortSelect.addEventListener('change', updateEvents);
+    list.addEventListener('click', event => {
+      const card = event.target.closest('.cms-event-card');
+      if (!card) return;
+
+      window.location.href = `/cms/event-new.html?id=${encodeURIComponent(card.dataset.id)}`;
+    });
+    list.addEventListener('keydown', event => {
+      if (!['Enter', ' '].includes(event.key)) return;
+
+      const card = event.target.closest('.cms-event-card');
+      if (!card) return;
+
+      event.preventDefault();
+      window.location.href = `/cms/event-new.html?id=${encodeURIComponent(card.dataset.id)}`;
+    });
     loadEvents();
   </script>
 </body>

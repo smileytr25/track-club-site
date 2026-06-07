@@ -2,6 +2,11 @@ import express from "express";
 import { pool } from "../db.js";
 
 const router = express.Router();
+const eventFields = `
+  id, title, event_date, event_time, location, description, status, created_at, updated_at
+`;
+const validStatuses = ["draft", "published"];
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function normalizeEvent(row) {
   const eventDate = row.event_date instanceof Date
@@ -44,7 +49,7 @@ router.get("/cms", async (_req, res) => {
   try {
     const result = await pool.query(
       `
-      SELECT id, title, event_date, event_time, location, description, status, created_at, updated_at
+      SELECT ${eventFields}
       FROM public.cms_events
       ORDER BY event_date ASC, event_time ASC NULLS LAST
       `
@@ -54,6 +59,34 @@ router.get("/cms", async (_req, res) => {
   } catch (error) {
     console.error("CMS events error:", error);
     res.status(500).json({ error: "Unable to load CMS events." });
+  }
+});
+
+router.get("/cms/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!uuidPattern.test(id)) {
+    return res.status(400).json({ error: "Invalid event id." });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT ${eventFields}
+      FROM public.cms_events
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Event not found." });
+    }
+
+    res.json({ event: normalizeEvent(result.rows[0]) });
+  } catch (error) {
+    console.error("CMS event detail error:", error);
+    res.status(500).json({ error: "Unable to load event." });
   }
 });
 
@@ -67,11 +100,11 @@ router.post("/cms", async (req, res) => {
     status = "draft"
   } = req.body;
 
-  if (!title || !eventDate || !location) {
+  if (!title?.trim() || !eventDate || !location?.trim()) {
     return res.status(400).json({ error: "Title, date, and location are required." });
   }
 
-  if (!["draft", "published"].includes(status)) {
+  if (!validStatuses.includes(status)) {
     return res.status(400).json({ error: "Invalid event status." });
   }
 
@@ -80,7 +113,7 @@ router.post("/cms", async (req, res) => {
       `
       INSERT INTO public.cms_events (title, event_date, event_time, location, description, status)
       VALUES ($1, $2, NULLIF($3, '')::time, $4, $5, $6)
-      RETURNING id, title, event_date, event_time, location, description, status, created_at, updated_at
+      RETURNING ${eventFields}
       `,
       [title.trim(), eventDate, eventTime || "", location.trim(), description?.trim() || null, status]
     );
@@ -89,6 +122,57 @@ router.post("/cms", async (req, res) => {
   } catch (error) {
     console.error("Create CMS event error:", error);
     res.status(500).json({ error: "Unable to create event." });
+  }
+});
+
+router.put("/cms/:id", async (req, res) => {
+  const { id } = req.params;
+  const {
+    title,
+    eventDate,
+    eventTime,
+    location,
+    description,
+    status = "draft"
+  } = req.body;
+
+  if (!uuidPattern.test(id)) {
+    return res.status(400).json({ error: "Invalid event id." });
+  }
+
+  if (!title?.trim() || !eventDate || !location?.trim()) {
+    return res.status(400).json({ error: "Title, date, and location are required." });
+  }
+
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: "Invalid event status." });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+      UPDATE public.cms_events
+      SET title = $1,
+          event_date = $2,
+          event_time = NULLIF($3, '')::time,
+          location = $4,
+          description = $5,
+          status = $6,
+          updated_at = now()
+      WHERE id = $7
+      RETURNING ${eventFields}
+      `,
+      [title.trim(), eventDate, eventTime || "", location.trim(), description?.trim() || null, status, id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Event not found." });
+    }
+
+    res.json({ event: normalizeEvent(result.rows[0]) });
+  } catch (error) {
+    console.error("Update CMS event error:", error);
+    res.status(500).json({ error: "Unable to update event." });
   }
 });
 
