@@ -59,6 +59,16 @@
           </div>
 
           <div class="form-field">
+            <label for="upload">Upload Image</label>
+            <div class="gallery-upload-dropzone" id="uploadDropzone" role="button" tabindex="0">
+              <input id="upload" name="upload" type="file" accept="image/*" hidden>
+              <span class="gallery-upload-icon">+</span>
+              <strong>Drag image here or select from computer</strong>
+              <p id="uploadFileName">No file selected</p>
+            </div>
+          </div>
+
+          <div class="form-field">
             <label for="file">GitHub Image Filename</label>
             <input id="file" name="file" type="text" placeholder="Photo Jul 19 2025, 1 34 11 PM.jpg">
           </div>
@@ -108,12 +118,17 @@
     const fields = {
       id: document.getElementById('imageId'),
       caption: document.getElementById('caption'),
+      upload: document.getElementById('upload'),
       file: document.getElementById('file'),
       imageUrl: document.getElementById('imageUrl'),
       sortOrder: document.getElementById('sortOrder'),
       status: document.getElementById('status')
     };
+    const uploadDropzone = document.getElementById('uploadDropzone');
+    const uploadFileName = document.getElementById('uploadFileName');
     let images = [];
+    let isSavingOrder = false;
+    let selectedUploadFile = null;
 
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>"']/g, character => ({
@@ -158,8 +173,8 @@
             <p>${escapeHtml(image.file || image.imageUrl)}</p>
           </div>
           <div class="gallery-card-actions">
-            <button type="button" class="button-secondary" data-action="up" ${index === 0 ? 'disabled' : ''}>Up</button>
-            <button type="button" class="button-secondary" data-action="down" ${index === images.length - 1 ? 'disabled' : ''}>Down</button>
+            <button type="button" class="button-secondary" data-action="up" ${index === 0 || isSavingOrder ? 'disabled' : ''}>Up</button>
+            <button type="button" class="button-secondary" data-action="down" ${index === images.length - 1 || isSavingOrder ? 'disabled' : ''}>Down</button>
             <button type="button" class="button-secondary" data-action="delete">Delete</button>
           </div>
         </article>
@@ -188,6 +203,7 @@
       fields.imageUrl.value = image.file ? '' : image.imageUrl || '';
       fields.sortOrder.value = image.sortOrder;
       fields.status.value = image.status;
+      clearUploadSelection();
       formTitle.textContent = 'Edit Photo';
       saveButton.textContent = 'Save Changes';
       setMessage('');
@@ -198,6 +214,7 @@
       fields.id.value = '';
       fields.sortOrder.value = images.length + 1;
       fields.status.value = 'published';
+      clearUploadSelection();
       formTitle.textContent = 'Add Photo';
       saveButton.textContent = 'Save Photo';
       setMessage('');
@@ -236,6 +253,25 @@
       if (!response.ok) {
         throw new Error(data.error || 'Unable to save gallery order.');
       }
+
+      images = data.images;
+      renderImages();
+    }
+
+    async function saveMove(id, direction) {
+      const response = await fetch(`${apiBase}/api/gallery/cms/order`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageId: id, direction })
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to move gallery photo.');
+      }
+
+      images = data.images;
+      renderImages();
     }
 
     async function moveImage(id, direction) {
@@ -246,15 +282,60 @@
 
       [images[index], images[nextIndex]] = [images[nextIndex], images[index]];
       images = images.map((image, orderIndex) => ({ ...image, sortOrder: orderIndex + 1 }));
+      isSavingOrder = true;
       renderImages();
 
       try {
-        await saveOrder();
+        await saveMove(id, direction);
         setMessage('Gallery order saved.', 'success');
       } catch (error) {
         setMessage(error.message, 'error');
-        loadImages();
+        await loadImages();
+      } finally {
+        isSavingOrder = false;
+        renderImages();
       }
+    }
+
+    function clearUploadSelection() {
+      selectedUploadFile = null;
+      fields.upload.value = '';
+      uploadDropzone.classList.remove('has-file');
+      uploadFileName.textContent = 'No file selected';
+    }
+
+    function setUploadSelection(file) {
+      if (!file) {
+        clearUploadSelection();
+        return;
+      }
+
+      selectedUploadFile = file;
+      fields.file.value = '';
+      fields.imageUrl.value = '';
+      uploadDropzone.classList.add('has-file');
+      uploadFileName.textContent = file.name;
+    }
+
+    function buildGalleryRequestBody(payload) {
+      const upload = selectedUploadFile || fields.upload.files[0];
+
+      if (!upload) {
+        return {
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        };
+      }
+
+      const body = new FormData();
+      body.append('caption', payload.caption);
+      body.append('file', '');
+      body.append('imageUrl', '');
+      body.append('sortOrder', payload.sortOrder);
+      body.append('status', payload.status);
+      body.append('upload', upload);
+
+      return { body };
     }
 
     async function deleteImage(id) {
@@ -291,12 +372,12 @@
         sortOrder: fields.sortOrder.value,
         status: fields.status.value
       };
+      const requestBody = buildGalleryRequestBody(payload);
 
       try {
         const response = await fetch(`${apiBase}/api/gallery/cms${id ? `/${encodeURIComponent(id)}` : ''}`, {
           method: id ? 'PUT' : 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          ...requestBody
         });
         const data = await response.json();
 
@@ -320,11 +401,13 @@
       const action = event.target.dataset.action;
 
       if (action === 'up' || action === 'down') {
+        event.stopPropagation();
         moveImage(card.dataset.id, action);
         return;
       }
 
       if (action === 'delete') {
+        event.stopPropagation();
         deleteImage(card.dataset.id);
         return;
       }
@@ -347,6 +430,28 @@
     searchInput.addEventListener('input', updateVisibleImages);
     statusFilter.addEventListener('change', updateVisibleImages);
     newButton.addEventListener('click', resetForm);
+    uploadDropzone.addEventListener('click', () => fields.upload.click());
+    uploadDropzone.addEventListener('keydown', event => {
+      if (!['Enter', ' '].includes(event.key)) return;
+      event.preventDefault();
+      fields.upload.click();
+    });
+    uploadDropzone.addEventListener('dragover', event => {
+      event.preventDefault();
+      uploadDropzone.classList.add('drag-over');
+    });
+    uploadDropzone.addEventListener('dragleave', () => {
+      uploadDropzone.classList.remove('drag-over');
+    });
+    uploadDropzone.addEventListener('drop', event => {
+      event.preventDefault();
+      uploadDropzone.classList.remove('drag-over');
+      setUploadSelection(event.dataTransfer.files[0]);
+    });
+    fields.upload.addEventListener('change', () => {
+      selectedUploadFile = fields.upload.files[0] || null;
+      setUploadSelection(selectedUploadFile);
+    });
     loadImages();
   </script>
 </body>

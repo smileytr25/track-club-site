@@ -1,4 +1,5 @@
 import express from "express";
+import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -8,8 +9,23 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const defaultBaseUrl = "https://raw.githubusercontent.com/smileytr25/GeneseeSwiftImages/main/";
+const uploadDir = path.join(__dirname, "..", "public-site", "image-assets", "gallery");
+const uploadUrlBase = "/image-assets/gallery/";
+const githubImageOwner = process.env.GALLERY_IMAGE_REPO_OWNER || "smileytr25";
+const githubImageRepo = process.env.GALLERY_IMAGE_REPO || "GeneseeSwiftImages";
+const githubImageBranch = process.env.GALLERY_IMAGE_BRANCH || "main";
+const githubImagePath = (process.env.GALLERY_IMAGE_PATH || "").replace(/^\/+|\/+$/g, "");
+const githubImageToken = process.env.GALLERY_IMAGE_TOKEN || process.env.GITHUB_IMAGE_TOKEN || process.env.GITHUB_TOKEN;
+const galleryUploadStorage = process.env.GALLERY_UPLOAD_STORAGE || "github";
+const maxUploadBytes = 12 * 1024 * 1024;
+const allowedImageTypes = new Map([
+  ["image/jpeg", ".jpg"],
+  ["image/png", ".png"],
+  ["image/webp", ".webp"],
+  ["image/gif", ".gif"]
+]);
 const validStatuses = ["draft", "published", "archived"];
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 let gallerySchemaReady;
 
 function normalizeGalleryImage(row) {
@@ -25,6 +41,280 @@ function normalizeGalleryImage(row) {
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
+}
+
+function splitBuffer(buffer, separator) {
+  const parts = [];
+  let start = 0;
+  let index = buffer.indexOf(separator);
+
+  while (index !== -1) {
+    parts.push(buffer.subarray(start, index));
+    start = index + separator.length;
+    index = buffer.indexOf(separator, start);
+  }
+
+  parts.push(buffer.subarray(start));
+  return parts;
+}
+
+function sanitizeUploadName(name) {
+  const parsed = path.parse(name || "gallery-image");
+  const base = parsed.name
+    .replace(/[^a-z0-9-_]+/gi, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 70) || "gallery-image";
+
+  return base.toLowerCase();
+}
+
+function getRawGithubImageUrl(filename) {
+  const encodedPath = [githubImagePath, filename]
+    .filter(Boolean)
+    .map(part => part.split("/").map(segment => encodeURIComponent(segment)).join("/"))
+    .join("/");
+
+  return `https://raw.githubusercontent.com/${githubImageOwner}/${githubImageRepo}/${githubImageBranch}/${encodedPath}`;
+}
+
+function getGithubRepoPathForImage(image) {
+  if (image.file) {
+    return [githubImagePath, image.file].filter(Boolean).join("/");
+  }
+
+  if (!image.image_url) return "";
+
+  try {
+    const url = new URL(image.image_url);
+    const pathParts = url.pathname.split("/").filter(Boolean);
+    const [owner, repo, branch, ...fileParts] = pathParts;
+
+    if (
+      url.hostname !== "raw.githubusercontent.com"
+      || owner !== githubImageOwner
+      || repo !== githubImageRepo
+      || branch !== githubImageBranch
+      || fileParts.length === 0
+    ) {
+      return "";
+    }
+
+    return fileParts.map(part => decodeURIComponent(part)).join("/");
+  } catch {
+    return "";
+  }
+}
+
+function getGithubContentsApiUrl(repoPath) {
+  return `https://api.github.com/repos/${githubImageOwner}/${githubImageRepo}/contents/${repoPath
+    .split("/")
+    .map(segment => encodeURIComponent(segment))
+    .join("/")}`;
+}
+
+async function saveUploadedImageLocally(filename, content) {
+  await fs.mkdir(uploadDir, { recursive: true });
+  await fs.writeFile(path.join(uploadDir, filename), content);
+  return `${uploadUrlBase}${encodeURIComponent(filename)}`;
+}
+
+async function uploadImageToGithub(filename, content) {
+  if (!githubImageToken) {
+    return {
+      error: "GitHub image uploads need GALLERY_IMAGE_TOKEN in .env. Create a fine-grained GitHub token with Contents read/write access to smileytr25/GeneseeSwiftImages."
+    };
+  }
+
+  const repoPath = [githubImagePath, filename].filter(Boolean).join("/");
+  const apiUrl = getGithubContentsApiUrl(repoPath);
+  const response = await fetch(apiUrl, {
+    method: "PUT",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${githubImageToken}`,
+      "Content-Type": "application/json",
+      "User-Agent": "genesee-swift-cms"
+    },
+    body: JSON.stringify({
+      message: `Add gallery image ${filename}`,
+      content: content.toString("base64"),
+      branch: githubImageBranch
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    return {
+      error: data.message ? `GitHub upload failed: ${data.message}` : "GitHub upload failed."
+    };
+  }
+
+  return { imageUrl: getRawGithubImageUrl(filename) };
+}
+
+async function deleteImageFromGithub(image) {
+  const repoPath = getGithubRepoPathForImage(image);
+
+  if (!repoPath) {
+    return { skipped: true };
+  }
+
+  if (!githubImageToken) {
+    return {
+      error: "GitHub image deletion needs GALLERY_IMAGE_TOKEN in .env."
+    };
+  }
+
+  const apiUrl = getGithubContentsApiUrl(repoPath);
+  const headers = {
+    "Accept": "application/vnd.github+json",
+    "Authorization": `Bearer ${githubImageToken}`,
+    "Content-Type": "application/json",
+    "User-Agent": "genesee-swift-cms"
+  };
+  const current = await fetch(`${apiUrl}?ref=${encodeURIComponent(githubImageBranch)}`, { headers });
+  const currentData = await current.json().catch(() => ({}));
+
+  if (!current.ok) {
+    return {
+      error: current.status === 404
+        ? "GitHub image file was not found, so the gallery row was not deleted."
+        : currentData.message
+          ? `GitHub lookup failed: ${currentData.message}`
+          : "GitHub lookup failed."
+    };
+  }
+
+  const response = await fetch(apiUrl, {
+    method: "DELETE",
+    headers,
+    body: JSON.stringify({
+      message: `Delete gallery image ${repoPath}`,
+      sha: currentData.sha,
+      branch: githubImageBranch
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    return {
+      error: data.message ? `GitHub deletion failed: ${data.message}` : "GitHub deletion failed."
+    };
+  }
+
+  return { deleted: true };
+}
+
+async function storeUploadedImage(filename, content) {
+  if (galleryUploadStorage === "local") {
+    return { imageUrl: await saveUploadedImageLocally(filename, content) };
+  }
+
+  return uploadImageToGithub(filename, content);
+}
+
+function getHeaderValue(headers, name) {
+  const prefix = `${name.toLowerCase()}:`;
+  const line = headers.find(header => header.toLowerCase().startsWith(prefix));
+  return line ? line.slice(prefix.length).trim() : "";
+}
+
+function parseContentDisposition(value) {
+  const result = {};
+
+  for (const part of value.split(";")) {
+    const [key, rawValue] = part.trim().split("=");
+    if (!rawValue) continue;
+    result[key] = rawValue.replace(/^"|"$/g, "");
+  }
+
+  return result;
+}
+
+async function readMultipartGalleryPayload(req) {
+  const contentType = req.headers["content-type"] || "";
+  const boundary = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/)?.[1]
+    || contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/)?.[2];
+
+  if (!boundary) {
+    return { error: "Invalid upload request." };
+  }
+
+  const chunks = [];
+  let totalBytes = 0;
+
+  for await (const chunk of req) {
+    totalBytes += chunk.length;
+
+    if (totalBytes > maxUploadBytes) {
+      return { error: "Image upload must be 12 MB or smaller." };
+    }
+
+    chunks.push(chunk);
+  }
+
+  const body = Buffer.concat(chunks);
+  const boundaryBuffer = Buffer.from(`--${boundary}`);
+  const fields = {};
+  let uploadedImage = null;
+
+  for (let part of splitBuffer(body, boundaryBuffer)) {
+    if (part.length === 0) continue;
+    if (part.subarray(0, 2).toString() === "\r\n") part = part.subarray(2);
+    if (part.subarray(0, 2).toString() === "--") continue;
+
+    const headerEnd = part.indexOf(Buffer.from("\r\n\r\n"));
+    if (headerEnd === -1) continue;
+
+    const headerLines = part.subarray(0, headerEnd).toString("utf8").split("\r\n");
+    let content = part.subarray(headerEnd + 4);
+    if (content.subarray(content.length - 2).toString() === "\r\n") {
+      content = content.subarray(0, content.length - 2);
+    }
+
+    const disposition = parseContentDisposition(getHeaderValue(headerLines, "content-disposition"));
+    if (!disposition.name) continue;
+
+    if (disposition.filename) {
+      if (content.length === 0) continue;
+
+      const mimeType = getHeaderValue(headerLines, "content-type").toLowerCase();
+      const extension = allowedImageTypes.get(mimeType);
+
+      if (!extension) {
+        return { error: "Upload a JPG, PNG, WebP, or GIF image." };
+      }
+
+      const filename = `${sanitizeUploadName(disposition.filename)}-${crypto.randomUUID()}${extension}`;
+      const storedImage = await storeUploadedImage(filename, content);
+
+      if (storedImage.error) {
+        return storedImage;
+      }
+
+      uploadedImage = {
+        filename,
+        imageUrl: storedImage.imageUrl
+      };
+    } else {
+      fields[disposition.name] = content.toString("utf8");
+    }
+  }
+
+  if (uploadedImage) {
+    fields.file = "";
+    fields.imageUrl = uploadedImage.imageUrl;
+  }
+
+  return fields;
+}
+
+async function parseGalleryRequest(req) {
+  if ((req.headers["content-type"] || "").includes("multipart/form-data")) {
+    return readMultipartGalleryPayload(req);
+  }
+
+  return req.body;
 }
 
 async function loadDefaultGalleryImages() {
@@ -91,6 +381,11 @@ async function ensureGallerySchema() {
 }
 
 function parseGalleryPayload(body) {
+  if (body?.error) {
+    return body;
+  }
+
+  body = body || {};
   const file = body.file?.trim() || null;
   const imageUrl = body.imageUrl?.trim() || null;
   const caption = body.caption?.trim();
@@ -156,7 +451,8 @@ router.get("/cms", async (_req, res) => {
 });
 
 router.post("/cms", async (req, res) => {
-  const payload = parseGalleryPayload(req.body);
+  const body = await parseGalleryRequest(req);
+  const payload = parseGalleryPayload(body);
 
   if (payload.error) {
     return res.status(400).json({ error: payload.error });
@@ -181,7 +477,77 @@ router.post("/cms", async (req, res) => {
 });
 
 router.put("/cms/order", async (req, res) => {
-  const { imageIds } = req.body;
+  const { imageId, direction, imageIds } = req.body;
+
+  if (imageId || direction) {
+    if (!uuidPattern.test(imageId) || !["up", "down"].includes(direction)) {
+      return res.status(400).json({ error: "A valid image and direction are required." });
+    }
+
+    try {
+      await ensureGallerySchema();
+      const client = await pool.connect();
+
+      try {
+        await client.query("BEGIN");
+
+        const current = await client.query(
+          `
+          SELECT id, file, image_url, caption, sort_order, status, created_at, updated_at
+          FROM public.cms_gallery
+          ORDER BY sort_order ASC, created_at ASC
+          FOR UPDATE
+          `
+        );
+        const rows = current.rows;
+        const index = rows.findIndex(row => row.id === imageId);
+        const nextIndex = direction === "up" ? index - 1 : index + 1;
+
+        if (index < 0) {
+          await client.query("ROLLBACK");
+          return res.status(404).json({ error: "Gallery image not found." });
+        }
+
+        if (nextIndex < 0 || nextIndex >= rows.length) {
+          await client.query("COMMIT");
+          return res.json({ images: rows.map(normalizeGalleryImage) });
+        }
+
+        [rows[index], rows[nextIndex]] = [rows[nextIndex], rows[index]];
+
+        for (const [orderIndex, row] of rows.entries()) {
+          await client.query(
+            `
+            UPDATE public.cms_gallery
+            SET sort_order = $1,
+                updated_at = now()
+            WHERE id = $2
+            `,
+            [orderIndex + 1, row.id]
+          );
+        }
+
+        const result = await client.query(
+          `
+          SELECT id, file, image_url, caption, sort_order, status, created_at, updated_at
+          FROM public.cms_gallery
+          ORDER BY sort_order ASC, created_at ASC
+          `
+        );
+
+        await client.query("COMMIT");
+        return res.json({ images: result.rows.map(normalizeGalleryImage) });
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      console.error("Move CMS gallery image error:", error);
+      return res.status(500).json({ error: "Unable to move gallery image." });
+    }
+  }
 
   if (!Array.isArray(imageIds) || imageIds.some(id => !uuidPattern.test(id))) {
     return res.status(400).json({ error: "A valid image order is required." });
@@ -189,20 +555,39 @@ router.put("/cms/order", async (req, res) => {
 
   try {
     await ensureGallerySchema();
+    const client = await pool.connect();
 
-    for (const [index, id] of imageIds.entries()) {
-      await pool.query(
+    try {
+      await client.query("BEGIN");
+
+      for (const [index, id] of imageIds.entries()) {
+        await client.query(
+          `
+          UPDATE public.cms_gallery
+          SET sort_order = $1,
+              updated_at = now()
+          WHERE id = $2
+          `,
+          [index + 1, id]
+        );
+      }
+
+      const result = await client.query(
         `
-        UPDATE public.cms_gallery
-        SET sort_order = $1,
-            updated_at = now()
-        WHERE id = $2
-        `,
-        [index + 1, id]
+        SELECT id, file, image_url, caption, sort_order, status, created_at, updated_at
+        FROM public.cms_gallery
+        ORDER BY sort_order ASC, created_at ASC
+        `
       );
-    }
 
-    res.json({ success: true });
+      await client.query("COMMIT");
+      res.json({ images: result.rows.map(normalizeGalleryImage) });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   } catch (error) {
     console.error("Order CMS gallery error:", error);
     res.status(500).json({ error: "Unable to save gallery order." });
@@ -211,11 +596,13 @@ router.put("/cms/order", async (req, res) => {
 
 router.put("/cms/:id", async (req, res) => {
   const { id } = req.params;
-  const payload = parseGalleryPayload(req.body);
 
   if (!uuidPattern.test(id)) {
     return res.status(400).json({ error: "Invalid gallery image id." });
   }
+
+  const body = await parseGalleryRequest(req);
+  const payload = parseGalleryPayload(body);
 
   if (payload.error) {
     return res.status(400).json({ error: payload.error });
@@ -258,11 +645,26 @@ router.delete("/cms/:id", async (req, res) => {
 
   try {
     await ensureGallerySchema();
-    const result = await pool.query("DELETE FROM public.cms_gallery WHERE id = $1", [id]);
+    const existing = await pool.query(
+      `
+      SELECT id, file, image_url, caption
+      FROM public.cms_gallery
+      WHERE id = $1
+      `,
+      [id]
+    );
 
-    if (result.rowCount === 0) {
+    if (existing.rowCount === 0) {
       return res.status(404).json({ error: "Gallery image not found." });
     }
+
+    const githubDelete = await deleteImageFromGithub(existing.rows[0]);
+
+    if (githubDelete.error) {
+      return res.status(502).json({ error: githubDelete.error });
+    }
+
+    await pool.query("DELETE FROM public.cms_gallery WHERE id = $1", [id]);
 
     res.json({ success: true });
   } catch (error) {

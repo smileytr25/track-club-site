@@ -5,6 +5,7 @@ let isAnimating = false;
 let autoTimer;
 
 function showSlides(n) {
+  if (slides.length === 0) return;
   if (isAnimating) return;
   clearInterval(autoTimer);
 
@@ -28,6 +29,13 @@ function showSlides(n) {
   isAnimating = true;
   const outgoing = slides[oldIndex];
   const incoming = slides[newIndex];
+
+  if (!outgoing || !incoming) {
+    slideIndex = 0;
+    isAnimating = false;
+    initializeSlideshow();
+    return;
+  }
 
   // prepare incoming off-screen
   incoming.style.display = 'block';
@@ -63,11 +71,21 @@ function showSlides(n) {
 }
 
 function restartAuto() {
+  if (slides.length === 0) return;
   autoTimer = setInterval(() => showSlides(slideIndex + 1), 10000);
 }
 
-// initialize on load
-for (let s of slides) s.style.display = 'none';
-slides[slideIndex].style.display = 'block';
-if (dots[slideIndex]) dots[slideIndex].classList.add('active');
-restartAuto();
+function initializeSlideshow() {
+  clearInterval(autoTimer);
+  isAnimating = false;
+  slideIndex = 0;
+
+  if (slides.length === 0) return;
+
+  for (let s of slides) s.style.display = 'none';
+  for (let dot of dots) dot.classList.remove('active');
+
+  slides[slideIndex].style.display = 'block';
+  if (dots[slideIndex]) dots[slideIndex].classList.add('active');
+  restartAuto();
+}

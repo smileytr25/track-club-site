@@ -165,7 +165,7 @@ function renderGalleryImages(galleryImages) {
 }
 
 function initializeGalleryControls() {
-  showSlides(0);
+  initializeSlideshow();
 
   const thumbsRowEl = document.querySelector('.thumb-row');
   const toggleBtn = document.createElement('button');

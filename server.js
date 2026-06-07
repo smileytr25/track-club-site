@@ -23,6 +23,7 @@ app.use("/api/cms", cmsAuthRoute);
 app.use("/api/events", eventsRoute);
 app.use("/api/gallery", galleryRoute);
 app.use("/cms", express.static(path.join(__dirname, "cms")));
+app.use("/image-assets", express.static(path.join(__dirname, "public-site", "image-assets")));
 app.use("/public-site", express.static(path.join(__dirname, "public-site")));
 
 app.get("/", (_, res) => res.send("API running"));
