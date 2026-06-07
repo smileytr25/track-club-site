@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import registerRoute from "./api/register.js";
 import cmsAuthRoute from "./api/cmsAuth.js";
 import eventsRoute from "./api/events.js";
+import galleryRoute from "./api/gallery.js";
 
 dotenv.config();
 
@@ -20,7 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/register", registerRoute);
 app.use("/api/cms", cmsAuthRoute);
 app.use("/api/events", eventsRoute);
+app.use("/api/gallery", galleryRoute);
 app.use("/cms", express.static(path.join(__dirname, "cms")));
+app.use("/public-site", express.static(path.join(__dirname, "public-site")));
 
 app.get("/", (_, res) => res.send("API running"));
 

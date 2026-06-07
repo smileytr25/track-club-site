@@ -113,6 +113,45 @@ CREATE INDEX idx_cms_events_date ON public.cms_events USING btree (event_date);
 
 CREATE INDEX idx_cms_events_status ON public.cms_events USING btree (status);
 
+--
+-- Name: cms_gallery; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cms_gallery (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    file text,
+    image_url text,
+    caption text NOT NULL,
+    sort_order integer DEFAULT 0 NOT NULL,
+    status text DEFAULT 'published'::text NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT cms_gallery_image_source_check CHECK ((((file IS NOT NULL) AND (length(TRIM(BOTH FROM file)) > 0)) OR ((image_url IS NOT NULL) AND (length(TRIM(BOTH FROM image_url)) > 0)))),
+    CONSTRAINT cms_gallery_status_check CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text, 'archived'::text])))
+);
+
+
+--
+-- Name: cms_gallery cms_gallery_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cms_gallery
+    ADD CONSTRAINT cms_gallery_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_cms_gallery_sort_order; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cms_gallery_sort_order ON public.cms_gallery USING btree (sort_order);
+
+
+--
+-- Name: idx_cms_gallery_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cms_gallery_status ON public.cms_gallery USING btree (status);
+
 
 --
 -- Name: registrations; Type: TABLE; Schema: public; Owner: -
