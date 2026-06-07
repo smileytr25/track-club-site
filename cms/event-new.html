@@ -63,6 +63,23 @@
     </section>
   </main>
 
+  <div class="cms-modal-backdrop" id="archiveWarningModal" hidden>
+    <section class="cms-modal" role="dialog" aria-modal="true" aria-labelledby="archiveWarningTitle" aria-describedby="archiveWarningText">
+      <div class="cms-modal-icon">!</div>
+      <div>
+        <p class="brand-kicker">Archive Warning</p>
+        <h2 id="archiveWarningTitle">Are you sure you want to set the date to this?</h2>
+        <p id="archiveWarningText">
+          This event is being created as published with a date of today or earlier, so it will be automatically archived.
+        </p>
+      </div>
+      <div class="cms-modal-actions">
+        <button type="button" class="button-secondary" id="cancelArchiveWarning">Go Back</button>
+        <button type="button" id="confirmArchiveWarning">Create Archived Event</button>
+      </div>
+    </section>
+  </div>
+
   <script>
     if (!sessionStorage.getItem('cmsUser')) {
       window.location.href = '/cms/';
@@ -72,10 +89,14 @@
     const message = document.getElementById('eventMessage');
     const pageTitle = document.getElementById('pageTitle');
     const saveButton = document.getElementById('saveButton');
+    const archiveWarningModal = document.getElementById('archiveWarningModal');
+    const cancelArchiveWarning = document.getElementById('cancelArchiveWarning');
+    const confirmArchiveWarning = document.getElementById('confirmArchiveWarning');
     const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
     const params = new URLSearchParams(window.location.search);
     const eventId = params.get('id');
     const isEditing = Boolean(eventId);
+    let pendingPayload = null;
 
     function setMessage(text, type = '') {
       message.textContent = text;
@@ -84,6 +105,28 @@
 
     function normalizeTime(value) {
       return value ? value.slice(0, 5) : '';
+    }
+
+    function getTodayValue() {
+      const today = new Date();
+      today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+      return today.toISOString().slice(0, 10);
+    }
+
+    function willAutoArchive(payload) {
+      return !isEditing && payload.status === 'published' && payload.eventDate <= getTodayValue();
+    }
+
+    function showArchiveWarning(payload) {
+      pendingPayload = payload;
+      archiveWarningModal.hidden = false;
+      confirmArchiveWarning.focus();
+    }
+
+    function closeArchiveWarning() {
+      archiveWarningModal.hidden = true;
+      pendingPayload = null;
+      saveButton.focus();
     }
 
     async function loadEvent() {
@@ -114,10 +157,7 @@
       }
     }
 
-    form.addEventListener('submit', async event => {
-      event.preventDefault();
-
-      const payload = Object.fromEntries(new FormData(form).entries());
+    async function saveEvent(payload) {
       setMessage(isEditing ? 'Updating event...' : 'Saving event...');
 
       try {
@@ -138,6 +178,37 @@
         }, 700);
       } catch (error) {
         setMessage(error.message, 'error');
+      }
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+
+      if (willAutoArchive(payload)) {
+        showArchiveWarning(payload);
+        return;
+      }
+
+      await saveEvent(payload);
+    });
+
+    cancelArchiveWarning.addEventListener('click', closeArchiveWarning);
+    archiveWarningModal.addEventListener('click', event => {
+      if (event.target === archiveWarningModal) {
+        closeArchiveWarning();
+      }
+    });
+    confirmArchiveWarning.addEventListener('click', async () => {
+      const payload = pendingPayload;
+      archiveWarningModal.hidden = true;
+      pendingPayload = null;
+      await saveEvent(payload);
+    });
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !archiveWarningModal.hidden) {
+        closeArchiveWarning();
       }
     });
 

@@ -219,6 +219,67 @@ button:disabled {
   box-shadow: var(--gstc-shadow-brand-sm);
 }
 
+.cms-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 7, 18, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.cms-modal-backdrop[hidden] {
+  display: none;
+}
+
+.cms-modal {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 18px;
+  padding: 28px;
+  background: rgba(var(--gstc-surface-rgb), 0.96);
+  border: var(--gstc-border-brand);
+  border-radius: var(--gstc-radius-xl);
+  box-shadow: var(--gstc-shadow-dark-lg);
+}
+
+.cms-modal-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.18);
+  color: #f59e0b;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.cms-modal h2 {
+  margin: 0 0 10px;
+  color: var(--gstc-color-text-strong);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.cms-modal p {
+  margin: 0;
+  color: var(--gstc-color-muted);
+  line-height: 1.6;
+}
+
+.cms-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cms-modal-actions button {
+  min-width: 150px;
+}
+
 .dashboard-page {
   min-height: 100vh;
   display: grid;
@@ -648,6 +709,18 @@ button:disabled {
 }
 
 @media (max-width: 520px) {
+  .cms-modal {
+    padding: 22px;
+  }
+
+  .cms-modal-actions {
+    display: grid;
+  }
+
+  .cms-modal-actions button {
+    width: 100%;
+  }
+
   .cms-surface {
     padding: 22px;
   }
