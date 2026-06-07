@@ -27,6 +27,16 @@
         </div>
 
         <div class="form-field">
+          <label for="eventStatusFilter">Category</label>
+          <select id="eventStatusFilter">
+            <option value="all">All Events</option>
+            <option value="published">Published</option>
+            <option value="draft">Drafts</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+
+        <div class="form-field">
           <label for="eventSort">Sort By</label>
           <select id="eventSort">
             <option value="date-asc">Date: Soonest</option>
@@ -52,6 +62,7 @@
     }
 
     const searchInput = document.getElementById('eventSearch');
+    const statusFilter = document.getElementById('eventStatusFilter');
     const sortSelect = document.getElementById('eventSort');
     const list = document.getElementById('eventCardList');
     const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
@@ -118,11 +129,14 @@
 
     function updateEvents() {
       const query = searchInput.value.trim().toLowerCase();
+      const selectedStatus = statusFilter.value;
       const cards = Array.from(list.querySelectorAll('.cms-event-card'));
 
       cards.forEach(card => {
         const searchable = `${card.dataset.title} ${card.dataset.location}`.toLowerCase();
-        card.hidden = query && !searchable.includes(query);
+        const matchesSearch = !query || searchable.includes(query);
+        const matchesStatus = selectedStatus === 'all' || card.dataset.status === selectedStatus;
+        card.hidden = !matchesSearch || !matchesStatus;
       });
 
       cards.sort((a, b) => {
@@ -157,6 +171,7 @@
     }
 
     searchInput.addEventListener('input', updateEvents);
+    statusFilter.addEventListener('change', updateEvents);
     sortSelect.addEventListener('change', updateEvents);
     list.addEventListener('click', event => {
       const card = event.target.closest('.cms-event-card');

@@ -5,8 +5,38 @@ const router = express.Router();
 const eventFields = `
   id, title, event_date, event_time, location, description, status, created_at, updated_at
 `;
-const validStatuses = ["draft", "published"];
+const validStatuses = ["draft", "published", "archived"];
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+let eventSchemaReady;
+
+async function ensureEventSchema() {
+  if (!eventSchemaReady) {
+    eventSchemaReady = pool.query(`
+      ALTER TABLE public.cms_events
+      DROP CONSTRAINT IF EXISTS cms_events_status_check;
+
+      ALTER TABLE public.cms_events
+      ADD CONSTRAINT cms_events_status_check
+      CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text, 'archived'::text])));
+    `).catch(error => {
+      eventSchemaReady = null;
+      throw error;
+    });
+  }
+
+  return eventSchemaReady;
+}
+
+async function archivePublishedEvents() {
+  await ensureEventSchema();
+  await pool.query(`
+    UPDATE public.cms_events
+    SET status = 'archived',
+        updated_at = now()
+    WHERE status = 'published'
+      AND event_date <= CURRENT_DATE
+  `);
+}
 
 function normalizeEvent(row) {
   const eventDate = row.event_date instanceof Date
@@ -28,12 +58,13 @@ function normalizeEvent(row) {
 
 router.get("/public", async (_req, res) => {
   try {
+    await archivePublishedEvents();
     const result = await pool.query(
       `
       SELECT id, title, event_date, event_time, location, description, status, created_at, updated_at
       FROM public.cms_events
       WHERE status = 'published'
-        AND event_date >= CURRENT_DATE
+        AND event_date > CURRENT_DATE
       ORDER BY event_date ASC, event_time ASC NULLS LAST
       `
     );
@@ -47,6 +78,7 @@ router.get("/public", async (_req, res) => {
 
 router.get("/cms", async (_req, res) => {
   try {
+    await archivePublishedEvents();
     const result = await pool.query(
       `
       SELECT ${eventFields}
@@ -70,6 +102,7 @@ router.get("/cms/:id", async (req, res) => {
   }
 
   try {
+    await archivePublishedEvents();
     const result = await pool.query(
       `
       SELECT ${eventFields}
@@ -109,10 +142,21 @@ router.post("/cms", async (req, res) => {
   }
 
   try {
+    await ensureEventSchema();
     const result = await pool.query(
       `
       INSERT INTO public.cms_events (title, event_date, event_time, location, description, status)
-      VALUES ($1, $2, NULLIF($3, '')::time, $4, $5, $6)
+      VALUES (
+        $1,
+        $2,
+        NULLIF($3, '')::time,
+        $4,
+        $5,
+        CASE
+          WHEN $6 = 'published' AND $2::date <= CURRENT_DATE THEN 'archived'
+          ELSE $6
+        END
+      )
       RETURNING ${eventFields}
       `,
       [title.trim(), eventDate, eventTime || "", location.trim(), description?.trim() || null, status]
@@ -149,6 +193,7 @@ router.put("/cms/:id", async (req, res) => {
   }
 
   try {
+    await ensureEventSchema();
     const result = await pool.query(
       `
       UPDATE public.cms_events
@@ -157,7 +202,10 @@ router.put("/cms/:id", async (req, res) => {
           event_time = NULLIF($3, '')::time,
           location = $4,
           description = $5,
-          status = $6,
+          status = CASE
+            WHEN $6 = 'published' AND $2::date <= CURRENT_DATE THEN 'archived'
+            ELSE $6
+          END,
           updated_at = now()
       WHERE id = $7
       RETURNING ${eventFields}

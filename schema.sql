@@ -88,7 +88,7 @@ CREATE TABLE public.cms_events (
     status text DEFAULT 'draft'::text NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
-    CONSTRAINT cms_events_status_check CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text])))
+    CONSTRAINT cms_events_status_check CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text, 'archived'::text])))
 );
 
 

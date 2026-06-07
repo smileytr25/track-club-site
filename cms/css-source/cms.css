@@ -481,7 +481,7 @@ button:disabled {
 
 .event-toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 260px);
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 220px) minmax(180px, 260px);
   gap: 16px;
   margin-bottom: 22px;
 }
@@ -542,6 +542,11 @@ button:disabled {
 .event-status.draft {
   background: rgba(var(--gstc-brand-rgb), 0.16);
   color: var(--gstc-color-brand-hover);
+}
+
+.event-status.archived {
+  background: rgba(148, 163, 184, 0.16);
+  color: #94a3b8;
 }
 
 .event-meta {
