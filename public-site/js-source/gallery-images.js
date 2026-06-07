@@ -1,4 +1,4 @@
-const galleryImages = [
+const defaultGalleryImages = [
   { file: "Photo Jul 19 2025, 1 34 11 PM.jpg", caption: "Women's Relay" },
   { file: "Photo Jul 19 2025, 2 06 05 PM.jpg", caption: "138 Running Hard" },
   { file: "Photo Jul 19 2025, 2 11 49 PM.jpg", caption: "152 Running Hard" },
@@ -91,44 +91,82 @@ const galleryImages = [
 ];
 
 const baseURL = "https://raw.githubusercontent.com/smileytr25/GeneseeSwiftImages/main/";
+const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
 
-const slideshow = document.querySelector(".slideshow-container");
-const thumbsRow = document.querySelector(".thumb-row");
-const prevBtn = slideshow.querySelector(".prev");
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[character]));
+}
 
-galleryImages.forEach((img, index) => {
-  const encodedFile = encodeURIComponent(img.file);
-  const imageURL = baseURL + encodedFile;
+function getDefaultImageUrl(img) {
+  return `${baseURL}${encodeURIComponent(img.file)}`;
+}
 
-  // Slide
-  const slide = document.createElement("div");
-  slide.className = "mySlides";
-  slide.innerHTML = `
-    <img
-      src="${imageURL}"
-      class="slide-image"
-      alt="${img.caption}"
-      loading="lazy"
-    >
-    <div class="text">${img.caption}</div>
-  `;
-  slideshow.insertBefore(slide, prevBtn);
+async function loadGalleryImages() {
+  try {
+    const response = await fetch(`${apiBase}/api/gallery/public`);
+    const data = await response.json();
 
-  // Thumbnail
-  const thumb = document.createElement("img");
-  thumb.src = imageURL;
-  thumb.className = "thumb dot";
-  if (index >= 10) thumb.classList.add('extra');
-  thumb.alt = img.caption;
-  thumb.onclick = () => showSlides(index);
-  thumbsRow.appendChild(thumb);
-});
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to load gallery.');
+    }
 
-// Initialize slideshow
-document.addEventListener("DOMContentLoaded", () => {
+    if (!Array.isArray(data.images) || data.images.length === 0) {
+      throw new Error('No CMS gallery images found.');
+    }
+
+    return data.images.map(img => ({
+      caption: img.caption,
+      imageUrl: img.imageUrl
+    }));
+  } catch (error) {
+    console.warn('Using fallback gallery images:', error);
+    return defaultGalleryImages.map(img => ({
+      caption: img.caption,
+      imageUrl: getDefaultImageUrl(img)
+    }));
+  }
+}
+
+function renderGalleryImages(galleryImages) {
+  const slideshow = document.querySelector(".slideshow-container");
+  const thumbsRow = document.querySelector(".thumb-row");
+  const prevBtn = slideshow && slideshow.querySelector(".prev");
+
+  if (!slideshow || !thumbsRow || !prevBtn) return;
+
+  galleryImages.forEach((img, index) => {
+    const slide = document.createElement("div");
+    slide.className = "mySlides";
+    slide.innerHTML = `
+      <img
+        src="${escapeHtml(img.imageUrl)}"
+        class="slide-image"
+        alt="${escapeHtml(img.caption)}"
+        loading="lazy"
+      >
+      <div class="text">${escapeHtml(img.caption)}</div>
+    `;
+    slideshow.insertBefore(slide, prevBtn);
+
+    const thumb = document.createElement("img");
+    thumb.src = img.imageUrl;
+    thumb.className = "thumb dot";
+    if (index >= 10) thumb.classList.add('extra');
+    thumb.alt = img.caption;
+    thumb.onclick = () => showSlides(index);
+    thumbsRow.appendChild(thumb);
+  });
+}
+
+function initializeGalleryControls() {
   showSlides(0);
 
-  // Create mobile toggle button for extra thumbnails
   const thumbsRowEl = document.querySelector('.thumb-row');
   const toggleBtn = document.createElement('button');
   toggleBtn.className = 'thumb-toggle';
@@ -141,7 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   if (thumbsRowEl) thumbsRowEl.appendChild(toggleBtn);
 
-  // initial collapsed state on small screens
   const applyInitialCollapse = () => {
     if (window.innerWidth <= 900) {
       thumbsRowEl && thumbsRowEl.classList.add('collapsed');
@@ -155,15 +192,18 @@ document.addEventListener("DOMContentLoaded", () => {
   applyInitialCollapse();
   window.addEventListener('resize', applyInitialCollapse);
 
-  // Keep loader visible for 5 seconds after page load, then hide it
   setTimeout(() => {
     const loader = document.querySelector('.thumb-loader');
     const thumbsRow = document.querySelector('.thumb-row');
-    // reveal thumbnails and hide loader
     if (thumbsRow) thumbsRow.classList.remove('loading');
     if (loader) loader.style.display = 'none';
-    // add small visual active state to first thumbnail if present
     const firstThumb = document.querySelector('.thumb-row .thumb');
     if (firstThumb) firstThumb.classList.add('active');
-  }, 5000);
+  }, 500);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const galleryImages = await loadGalleryImages();
+  renderGalleryImages(galleryImages);
+  initializeGalleryControls();
 });

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gallery Management - Genesee Swift CMS</title>
+  <link rel="stylesheet" href="css-source/cms.css">
+</head>
+<body>
+  <main class="cms-page">
+    <header class="cms-header">
+      <div>
+        <p class="brand-kicker">Genesee Swift CMS</p>
+        <h1>Gallery Management</h1>
+      </div>
+      <div class="cms-header-actions">
+        <a class="cms-link-button" href="/cms/dashboard.html">Dashboard</a>
+        <a class="cms-link-button" href="/public-site/html-source/gallery.html">Public Gallery</a>
+      </div>
+    </header>
+
+    <section class="cms-workspace">
+      <div class="cms-surface">
+        <div class="event-toolbar gallery-toolbar">
+          <div class="form-field">
+            <label for="gallerySearch">Search</label>
+            <input id="gallerySearch" type="search" placeholder="Search by caption or filename">
+          </div>
+
+          <div class="form-field">
+            <label for="galleryStatusFilter">Category</label>
+            <select id="galleryStatusFilter">
+              <option value="all">All Photos</option>
+              <option value="published">Published</option>
+              <option value="draft">Drafts</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="event-card-list gallery-card-list" id="galleryCardList">
+          <div class="event-empty-state">
+            <span>...</span>
+            <p>Loading gallery</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="cms-surface">
+        <h2 id="galleryFormTitle">Add Photo</h2>
+        <p class="auth-message" id="galleryMessage"></p>
+
+        <form class="cms-form" id="galleryForm">
+          <input id="imageId" type="hidden">
+
+          <div class="form-field">
+            <label for="caption">Caption</label>
+            <input id="caption" name="caption" type="text" required placeholder="Relay pass">
+          </div>
+
+          <div class="form-field">
+            <label for="file">GitHub Image Filename</label>
+            <input id="file" name="file" type="text" placeholder="Photo Jul 19 2025, 1 34 11 PM.jpg">
+          </div>
+
+          <div class="form-field">
+            <label for="imageUrl">Full Image URL</label>
+            <input id="imageUrl" name="imageUrl" type="url" placeholder="https://example.com/photo.jpg">
+          </div>
+
+          <div class="cms-form-grid">
+            <div class="form-field">
+              <label for="sortOrder">Order</label>
+              <input id="sortOrder" name="sortOrder" type="number" min="0" step="1" value="0">
+            </div>
+
+            <div class="form-field">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" id="saveButton">Save Photo</button>
+          <button type="button" class="button-secondary" id="newButton">New Photo</button>
+        </form>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    if (!sessionStorage.getItem('cmsUser')) {
+      window.location.href = '/cms/';
+    }
+
+    const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
+    const searchInput = document.getElementById('gallerySearch');
+    const statusFilter = document.getElementById('galleryStatusFilter');
+    const list = document.getElementById('galleryCardList');
+    const form = document.getElementById('galleryForm');
+    const message = document.getElementById('galleryMessage');
+    const formTitle = document.getElementById('galleryFormTitle');
+    const saveButton = document.getElementById('saveButton');
+    const newButton = document.getElementById('newButton');
+    const fields = {
+      id: document.getElementById('imageId'),
+      caption: document.getElementById('caption'),
+      file: document.getElementById('file'),
+      imageUrl: document.getElementById('imageUrl'),
+      sortOrder: document.getElementById('sortOrder'),
+      status: document.getElementById('status')
+    };
+    let images = [];
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[character]));
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, '&#96;');
+    }
+
+    function setMessage(text, type = '') {
+      message.textContent = text;
+      message.className = `auth-message ${type}`.trim();
+    }
+
+    function getImageSource(image) {
+      return image.imageUrl || '';
+    }
+
+    function renderImages() {
+      if (images.length === 0) {
+        list.innerHTML = `
+          <div class="event-empty-state">
+            <span>0</span>
+            <p>No CMS-managed gallery photos yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = images.map((image, index) => `
+        <article class="cms-event-card cms-gallery-card" tabindex="0" data-id="${escapeAttribute(image.id)}" data-caption="${escapeAttribute(image.caption)}" data-file="${escapeAttribute(image.file || '')}" data-status="${escapeAttribute(image.status)}">
+          <img src="${escapeAttribute(getImageSource(image))}" alt="${escapeAttribute(image.caption)}" loading="lazy">
+          <div>
+            <p class="event-status ${escapeAttribute(image.status)}">${escapeHtml(image.status)}</p>
+            <h2>${escapeHtml(image.caption)}</h2>
+            <p>${escapeHtml(image.file || image.imageUrl)}</p>
+          </div>
+          <div class="gallery-card-actions">
+            <button type="button" class="button-secondary" data-action="up" ${index === 0 ? 'disabled' : ''}>Up</button>
+            <button type="button" class="button-secondary" data-action="down" ${index === images.length - 1 ? 'disabled' : ''}>Down</button>
+            <button type="button" class="button-secondary" data-action="delete">Delete</button>
+          </div>
+        </article>
+      `).join('');
+
+      updateVisibleImages();
+    }
+
+    function updateVisibleImages() {
+      const query = searchInput.value.trim().toLowerCase();
+      const selectedStatus = statusFilter.value;
+      const cards = Array.from(list.querySelectorAll('.cms-gallery-card'));
+
+      cards.forEach(card => {
+        const searchable = `${card.dataset.caption} ${card.dataset.file}`.toLowerCase();
+        const matchesSearch = !query || searchable.includes(query);
+        const matchesStatus = selectedStatus === 'all' || card.dataset.status === selectedStatus;
+        card.hidden = !matchesSearch || !matchesStatus;
+      });
+    }
+
+    function fillForm(image) {
+      fields.id.value = image.id;
+      fields.caption.value = image.caption;
+      fields.file.value = image.file || '';
+      fields.imageUrl.value = image.file ? '' : image.imageUrl || '';
+      fields.sortOrder.value = image.sortOrder;
+      fields.status.value = image.status;
+      formTitle.textContent = 'Edit Photo';
+      saveButton.textContent = 'Save Changes';
+      setMessage('');
+    }
+
+    function resetForm() {
+      form.reset();
+      fields.id.value = '';
+      fields.sortOrder.value = images.length + 1;
+      fields.status.value = 'published';
+      formTitle.textContent = 'Add Photo';
+      saveButton.textContent = 'Save Photo';
+      setMessage('');
+    }
+
+    async function loadImages() {
+      try {
+        const response = await fetch(`${apiBase}/api/gallery/cms`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load gallery.');
+        }
+
+        images = data.images;
+        renderImages();
+        resetForm();
+      } catch (error) {
+        list.innerHTML = `
+          <div class="event-empty-state">
+            <span>!</span>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    async function saveOrder() {
+      const response = await fetch(`${apiBase}/api/gallery/cms/order`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageIds: images.map(image => image.id) })
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to save gallery order.');
+      }
+    }
+
+    async function moveImage(id, direction) {
+      const index = images.findIndex(image => image.id === id);
+      const nextIndex = direction === 'up' ? index - 1 : index + 1;
+
+      if (index < 0 || nextIndex < 0 || nextIndex >= images.length) return;
+
+      [images[index], images[nextIndex]] = [images[nextIndex], images[index]];
+      images = images.map((image, orderIndex) => ({ ...image, sortOrder: orderIndex + 1 }));
+      renderImages();
+
+      try {
+        await saveOrder();
+        setMessage('Gallery order saved.', 'success');
+      } catch (error) {
+        setMessage(error.message, 'error');
+        loadImages();
+      }
+    }
+
+    async function deleteImage(id) {
+      const image = images.find(item => item.id === id);
+      if (!image || !window.confirm(`Delete "${image.caption}" from the gallery?`)) return;
+
+      try {
+        const response = await fetch(`${apiBase}/api/gallery/cms/${encodeURIComponent(id)}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to delete photo.');
+        }
+
+        setMessage('Photo deleted.', 'success');
+        await loadImages();
+      } catch (error) {
+        setMessage(error.message, 'error');
+      }
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      setMessage('');
+      saveButton.disabled = true;
+
+      const id = fields.id.value;
+      const payload = {
+        caption: fields.caption.value,
+        file: fields.file.value,
+        imageUrl: fields.imageUrl.value,
+        sortOrder: fields.sortOrder.value,
+        status: fields.status.value
+      };
+
+      try {
+        const response = await fetch(`${apiBase}/api/gallery/cms${id ? `/${encodeURIComponent(id)}` : ''}`, {
+          method: id ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to save photo.');
+        }
+
+        setMessage(id ? 'Photo updated.' : 'Photo added.', 'success');
+        await loadImages();
+      } catch (error) {
+        setMessage(error.message, 'error');
+      } finally {
+        saveButton.disabled = false;
+      }
+    });
+
+    list.addEventListener('click', event => {
+      const card = event.target.closest('.cms-gallery-card');
+      if (!card) return;
+
+      const action = event.target.dataset.action;
+
+      if (action === 'up' || action === 'down') {
+        moveImage(card.dataset.id, action);
+        return;
+      }
+
+      if (action === 'delete') {
+        deleteImage(card.dataset.id);
+        return;
+      }
+
+      const image = images.find(item => item.id === card.dataset.id);
+      if (image) fillForm(image);
+    });
+
+    list.addEventListener('keydown', event => {
+      if (!['Enter', ' '].includes(event.key)) return;
+
+      const card = event.target.closest('.cms-gallery-card');
+      if (!card) return;
+
+      event.preventDefault();
+      const image = images.find(item => item.id === card.dataset.id);
+      if (image) fillForm(image);
+    });
+
+    searchInput.addEventListener('input', updateVisibleImages);
+    statusFilter.addEventListener('change', updateVisibleImages);
+    newButton.addEventListener('click', resetForm);
+    loadImages();
+  </script>
+</body>
+</html>
