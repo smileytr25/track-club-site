@@ -89,3 +89,9 @@ function initializeSlideshow() {
   if (dots[slideIndex]) dots[slideIndex].classList.add('active');
   restartAuto();
 }
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeSlideshow);
+} else {
+  initializeSlideshow();
+}

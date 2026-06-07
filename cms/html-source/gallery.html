@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gallery Management - Genesee Swift CMS</title>
-  <link rel="stylesheet" href="css-source/cms.css">
+  <link rel="stylesheet" href="../css-source/cms.css">
 </head>
 <body>
   <main class="cms-page">
@@ -14,7 +14,7 @@
         <h1>Gallery Management</h1>
       </div>
       <div class="cms-header-actions">
-        <a class="cms-link-button" href="/cms/dashboard.html">Dashboard</a>
+        <a class="cms-link-button" href="/cms/html-source/dashboard.html">Dashboard</a>
         <a class="cms-link-button" href="/public-site/html-source/gallery.html">Public Gallery</a>
       </div>
     </header>
@@ -103,7 +103,7 @@
 
   <script>
     if (!sessionStorage.getItem('cmsUser')) {
-      window.location.href = '/cms/';
+      window.location.href = '/cms/html-source/index.html';
     }
 
     const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';

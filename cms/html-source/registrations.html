@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registration Management - Genesee Swift CMS</title>
+  <link rel="stylesheet" href="../css-source/cms.css">
+</head>
+<body>
+  <main class="cms-page">
+    <header class="cms-header">
+      <div>
+        <p class="brand-kicker">Genesee Swift CMS</p>
+        <h1>Registrations</h1>
+      </div>
+      <div class="cms-header-actions">
+        <a class="cms-link-button" href="/cms/html-source/dashboard.html">Dashboard</a>
+        <button class="cms-link-button" type="button" id="printReportButton">Print Report</button>
+        <button class="cms-link-button" type="button" id="downloadReportButton">Download CSV</button>
+      </div>
+    </header>
+
+    <section class="cms-workspace registrations-workspace">
+      <div class="cms-surface">
+        <div class="registration-summary" id="registrationSummary">
+          <div>
+            <span>Total</span>
+            <strong>0</strong>
+          </div>
+          <div>
+            <span>Paid</span>
+            <strong>0</strong>
+          </div>
+          <div>
+            <span>Open</span>
+            <strong>0</strong>
+          </div>
+        </div>
+
+        <div class="event-toolbar registration-toolbar">
+          <div class="form-field">
+            <label for="registrationSearch">Search</label>
+            <input id="registrationSearch" type="search" placeholder="Athlete, guardian, email, phone">
+          </div>
+
+          <div class="form-field">
+            <label for="programFilter">Program</label>
+            <select id="programFilter">
+              <option value="all">All Programs</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="paymentFilter">Payment</label>
+            <select id="paymentFilter">
+              <option value="all">All Payments</option>
+              <option value="paid">Paid</option>
+              <option value="unpaid">Unpaid</option>
+              <option value="pending">Pending</option>
+              <option value="waived">Waived</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="event-card-list" id="registrationList">
+          <div class="event-empty-state">
+            <span>...</span>
+            <p>Loading registrations</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="cms-surface registration-editor" aria-labelledby="editorTitle">
+        <h2 id="editorTitle">Registration Details</h2>
+        <div class="registration-editor-empty" id="editorEmpty">
+          <p>Select a registration to update program details or payment status.</p>
+        </div>
+
+        <form class="cms-form" id="registrationForm" hidden>
+          <div class="readonly-detail">
+            <span>Athlete</span>
+            <strong id="detailAthlete"></strong>
+          </div>
+          <div class="readonly-detail">
+            <span>Guardian</span>
+            <strong id="detailGuardian"></strong>
+          </div>
+          <div class="readonly-detail">
+            <span>Contact</span>
+            <strong id="detailContact"></strong>
+          </div>
+
+          <div class="cms-form-grid">
+            <div class="form-field">
+              <label for="editProgram">Program</label>
+              <select id="editProgram" required>
+                <option value="Indoor Track">Indoor Track</option>
+                <option value="Outdoor Track">Outdoor Track</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="editSchoolDistrict">School District</label>
+              <input id="editSchoolDistrict" type="text" required>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="editPaymentStatus">Registration Fee</label>
+            <select id="editPaymentStatus">
+              <option value="unpaid">Unpaid</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="waived">Waived</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="editPaymentReference">Payment Note / Reference</label>
+            <input id="editPaymentReference" type="text" placeholder="Cash, check number, Stripe session">
+          </div>
+
+          <fieldset class="registration-fieldset">
+            <legend>Events Interested In</legend>
+            <label><input type="checkbox" id="editInterestSprints"> Sprints</label>
+            <label><input type="checkbox" id="editInterestDistance"> Distance</label>
+            <label><input type="checkbox" id="editInterestRelays"> Relays</label>
+            <label><input type="checkbox" id="editInterestJumps"> Jumps</label>
+            <label><input type="checkbox" id="editInterestThrows"> Throws</label>
+          </fieldset>
+
+          <div class="form-field">
+            <label for="editAllergies">Medical / Allergies</label>
+            <textarea id="editAllergies" rows="4"></textarea>
+          </div>
+
+          <p class="auth-message" id="registrationMessage"></p>
+          <div class="cms-form-actions">
+            <button type="submit">Save Registration</button>
+            <button type="button" class="button-danger" id="deleteRegistrationButton">Delete Registration</button>
+          </div>
+        </form>
+      </aside>
+    </section>
+  </main>
+
+  <script src="../js-source/registrations.js"></script>
+</body>
+</html>

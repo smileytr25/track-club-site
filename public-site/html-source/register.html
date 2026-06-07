@@ -239,6 +239,95 @@
       const dobError = document.getElementById('dobError');
       const msg = document.getElementById('formMessage');
       const submitBtn = document.getElementById('submitBtn');
+      const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
+      const successOverlay = document.getElementById('successOverlay');
+      const paymentMessage = document.getElementById('paymentMessage');
+      const paymentFee = document.getElementById('paymentFee');
+      const payNowBtn = document.getElementById('payNowBtn');
+      const payLaterBtn = document.getElementById('payLaterBtn');
+      const backHomeBtn = document.getElementById('backHomeBtn');
+      let currentRegistrationId = null;
+
+      function formatMoney(cents) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD'
+        }).format((Number(cents) || 0) / 100);
+      }
+
+      function showPaymentStep(registrationId, feeCents, messageText) {
+        currentRegistrationId = registrationId;
+        if (paymentFee) paymentFee.textContent = formatMoney(feeCents);
+        if (paymentMessage) {
+          paymentMessage.textContent = messageText || 'Your registration is saved. Please complete the registration fee now or choose pay later.';
+          paymentMessage.style.color = '#555';
+        }
+        if (payNowBtn) payNowBtn.hidden = false;
+        if (payLaterBtn) payLaterBtn.hidden = false;
+        if (backHomeBtn) backHomeBtn.hidden = true;
+        if (successOverlay) {
+          successOverlay.style.display = 'flex';
+          document.body.classList.add('no-scroll');
+          if (payNowBtn) payNowBtn.focus();
+        }
+      }
+
+      function showFinalStep(messageText) {
+        if (paymentMessage) {
+          paymentMessage.textContent = messageText;
+          paymentMessage.style.color = '#0a7';
+        }
+        if (payNowBtn) payNowBtn.hidden = true;
+        if (payLaterBtn) payLaterBtn.hidden = true;
+        if (backHomeBtn) {
+          backHomeBtn.hidden = false;
+          backHomeBtn.focus();
+        }
+      }
+
+      async function verifyPaymentReturn() {
+        const params = new URLSearchParams(window.location.search);
+        const registrationId = params.get('registration_id');
+        const sessionId = params.get('session_id');
+        const payment = params.get('payment');
+
+        if (!registrationId || payment !== 'success') return;
+
+        if (successOverlay) {
+          successOverlay.style.display = 'flex';
+          document.body.classList.add('no-scroll');
+        }
+        if (paymentFee) paymentFee.textContent = 'Registration fee';
+        if (paymentMessage) {
+          paymentMessage.textContent = 'Confirming your payment...';
+          paymentMessage.style.color = '#555';
+        }
+        if (payNowBtn) payNowBtn.hidden = true;
+        if (payLaterBtn) payLaterBtn.hidden = true;
+        if (backHomeBtn) backHomeBtn.hidden = true;
+
+        try {
+          const response = await fetch(`${apiBase}/api/register/${encodeURIComponent(registrationId)}/payment/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(data.error || 'We saved your registration, but could not verify the payment automatically.');
+          }
+
+          showFinalStep('Payment received. Thank you for registering with Genesee Swift.');
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (error) {
+          if (paymentMessage) {
+            paymentMessage.textContent = error.message;
+            paymentMessage.style.color = 'crimson';
+          }
+          if (backHomeBtn) backHomeBtn.hidden = false;
+        }
+      }
 
       // set DOB min/max so browser shows valid range (child age 8-18)
       const today = new Date();
@@ -333,13 +422,13 @@
         if (childName) {
           const parts = childName.split(/\s+/);
           payload.first_name = parts.shift() || '';
-          payload.last_name = parts.join(' ') || '';
+          payload.last_name = parts.join(' ') || 'Not provided';
         }
 
         // disable submit while sending
         if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
 
-        fetch('http://localhost:3000/api/register', {
+        fetch(`${apiBase}/api/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -351,13 +440,9 @@
             msg.textContent = data && data.error ? data.error : 'Server error — please try again later.';
             return;
           }
-          // success: show full-screen thank you overlay
-          const overlay = document.getElementById('successOverlay');
-          if (overlay) {
-            overlay.style.display = 'flex';
-            document.body.classList.add('no-scroll');
-            const btn = overlay.querySelector('#backHomeBtn');
-            if (btn) btn.focus();
+          const data = await res.json().catch(()=>({}));
+          if (data.registration_id) {
+            showPaymentStep(data.registration_id, data.registration_fee_cents);
           } else {
             msg.style.color = '#0a7';
             msg.textContent = 'Registration submitted — we will reach out shortly.';
@@ -370,15 +455,71 @@
           msg.textContent = 'Network error — please try again.';
         });
       });
+
+      if (payNowBtn) {
+        payNowBtn.addEventListener('click', async function () {
+          if (!currentRegistrationId) return;
+          payNowBtn.disabled = true;
+          payNowBtn.textContent = 'Starting checkout...';
+          if (paymentMessage) {
+            paymentMessage.textContent = 'Preparing secure checkout.';
+            paymentMessage.style.color = '#555';
+          }
+
+          try {
+            const response = await fetch(`${apiBase}/api/register/${encodeURIComponent(currentRegistrationId)}/checkout`, {
+              method: 'POST'
+            });
+            const data = await response.json().catch(() => ({}));
+
+            if (data.checkoutUrl) {
+              window.location.href = data.checkoutUrl;
+              return;
+            }
+
+            if (response.status === 202) {
+              showFinalStep(data.message || 'Your registration is saved. Please pay the registration fee with club staff.');
+              return;
+            }
+
+            if (!response.ok) {
+              throw new Error(data.error || 'Unable to start checkout.');
+            }
+
+            showFinalStep('Registration fee already handled. Thank you.');
+          } catch (error) {
+            if (paymentMessage) {
+              paymentMessage.textContent = error.message;
+              paymentMessage.style.color = 'crimson';
+            }
+          } finally {
+            payNowBtn.disabled = false;
+            payNowBtn.textContent = 'Pay Registration Fee';
+          }
+        });
+      }
+
+      if (payLaterBtn) {
+        payLaterBtn.addEventListener('click', function () {
+          showFinalStep('Your registration is saved as pay later. Please complete the registration fee with club staff.');
+        });
+      }
+
+      verifyPaymentReturn();
     });
   </script>
   
   <!-- Success overlay shown after valid submission -->
   <div id="successOverlay" style="display:none;position:fixed;inset:0;background:#fff;z-index:2000;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
     <div style="max-width:720px;text-align:center;">
-      <h1 style="color:#222;margin-bottom:8px;font-size:28px;">Thank you for your submission</h1>
-      <p style="color:#555;margin-bottom:20px;font-size:16px;">We will reach out soon.</p>
-      <button id="backHomeBtn" style="background:linear-gradient(135deg,#DC5F00,#ff7a1f);color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;">Back to Home</button>
+      <h1 style="color:#222;margin-bottom:8px;font-size:28px;">Registration saved</h1>
+      <p style="color:#222;margin:0 0 8px;font-size:22px;font-weight:800;">Fee due: <span id="paymentFee">$50.00</span></p>
+      <p id="paymentMessage" style="color:#555;margin-bottom:20px;font-size:16px;">Please complete the registration fee now or choose pay later.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="payNowBtn" style="background:linear-gradient(135deg,#DC5F00,#ff7a1f);color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;">Pay Registration Fee</button>
+        <button id="payLaterBtn" style="background:white;color:#222;border:1px solid #DC5F00;padding:12px 18px;border-radius:8px;cursor:pointer;">Pay Later</button>
+        <button id="backHomeBtn" hidden style="background:linear-gradient(135deg,#DC5F00,#ff7a1f);color:white;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;">Back to Home</button>
+      </div>
     </div>
   </div>
   <script>
@@ -394,5 +535,6 @@
       });
     })();
   </script>
+  <script src="../js-source/site-copy.js"></script>
 </body>
 </html>

@@ -7,6 +7,7 @@ import registerRoute from "./api/register.js";
 import cmsAuthRoute from "./api/cmsAuth.js";
 import eventsRoute from "./api/events.js";
 import galleryRoute from "./api/gallery.js";
+import siteCopyRoute from "./api/siteCopy.js";
 
 dotenv.config();
 
@@ -22,6 +23,29 @@ app.use("/api/register", registerRoute);
 app.use("/api/cms", cmsAuthRoute);
 app.use("/api/events", eventsRoute);
 app.use("/api/gallery", galleryRoute);
+app.use("/api/site-copy", siteCopyRoute);
+
+app.get("/cms", (_req, res) => res.redirect(301, "/cms/html-source/index.html"));
+app.get("/cms/", (_req, res) => res.redirect(301, "/cms/html-source/index.html"));
+app.get("/cms/:page.html", (req, res, next) => {
+  const cmsPages = new Set([
+    "index",
+    "dashboard",
+    "events",
+    "event-new",
+    "gallery",
+    "registrations",
+    "site-copy"
+  ]);
+
+  if (!cmsPages.has(req.params.page)) {
+    return next();
+  }
+
+  const query = req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "";
+  res.redirect(301, `/cms/html-source/${req.params.page}.html${query}`);
+});
+
 app.use("/cms", express.static(path.join(__dirname, "cms")));
 app.use("/image-assets", express.static(path.join(__dirname, "public-site", "image-assets")));
 app.use("/public-site", express.static(path.join(__dirname, "public-site")));
@@ -29,6 +53,13 @@ app.use("/public-site", express.static(path.join(__dirname, "public-site")));
 app.get("/", (_, res) => res.send("API running"));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+const HOST = process.env.HOST || "127.0.0.1";
+const server = app.listen(PORT, HOST, () => {
+  console.log(`Server listening on http://${HOST}:${PORT}`);
 });
+
+server.on("error", error => {
+  console.error("Server startup error:", error);
+});
+
+export { app, server };

@@ -154,6 +154,42 @@ CREATE INDEX idx_cms_gallery_status ON public.cms_gallery USING btree (status);
 
 
 --
+-- Name: cms_site_copy; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cms_site_copy (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    page_path text NOT NULL,
+    selector text NOT NULL,
+    text_content text NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: cms_site_copy cms_site_copy_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cms_site_copy
+    ADD CONSTRAINT cms_site_copy_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_cms_site_copy_page; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cms_site_copy_page ON public.cms_site_copy USING btree (page_path);
+
+
+--
+-- Name: idx_cms_site_copy_unique; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_cms_site_copy_unique ON public.cms_site_copy USING btree (page_path, selector);
+
+
+--
 -- Name: registrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -181,7 +217,14 @@ CREATE TABLE public.registrations (
     interest_jumps boolean DEFAULT false,
     interest_throws boolean DEFAULT false,
     allergies text,
-    program text NOT NULL
+    program text NOT NULL,
+    registration_fee_cents integer DEFAULT 5000 NOT NULL,
+    payment_status text DEFAULT 'unpaid'::text NOT NULL,
+    payment_provider text,
+    payment_reference text,
+    paid_at timestamp without time zone,
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT registrations_payment_status_check CHECK ((payment_status = ANY (ARRAY['unpaid'::text, 'pending'::text, 'paid'::text, 'waived'::text])))
 );
 
 
@@ -212,6 +255,13 @@ CREATE INDEX idx_registrations_email ON public.registrations USING btree (email)
 --
 
 CREATE INDEX idx_registrations_program ON public.registrations USING btree (program);
+
+
+--
+-- Name: idx_registrations_payment_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_registrations_payment_status ON public.registrations USING btree (payment_status);
 
 
 --

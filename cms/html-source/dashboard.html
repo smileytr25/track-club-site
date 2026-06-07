@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CMS Dashboard - Genesee Swift Track Club</title>
-  <link rel="stylesheet" href="css-source/cms.css">
+  <link rel="stylesheet" href="../css-source/cms.css">
 </head>
 <body>
   <main class="dashboard-page">
@@ -26,30 +26,30 @@
         </div>
         <p class="auth-message success" id="dashboardMessage">Signed in.</p>
         <div class="dashboard-actions">
-          <button type="button" onclick="window.location.href='/cms/events.html'">Open Editor</button>
+          <button type="button" onclick="window.location.href='/cms/html-source/events.html'">Open Editor</button>
           <button type="button" class="button-secondary" id="logoutButton">Log Out</button>
         </div>
       </article>
 
-      <a class="dashboard-node node-events" href="/cms/events.html">
+      <a class="dashboard-node node-events" href="/cms/html-source/events.html">
         <span>01</span>
         <h2>Events</h2>
         <p>Manage meets, dates, locations, and public event cards.</p>
       </a>
 
-      <a class="dashboard-node node-gallery" href="/cms/gallery.html">
+      <a class="dashboard-node node-gallery" href="/cms/html-source/gallery.html">
         <span>02</span>
         <h2>Gallery</h2>
         <p>Curate photos and control what appears in the public slideshow.</p>
       </a>
 
-      <a class="dashboard-node node-registrations" href="#">
+      <a class="dashboard-node node-registrations" href="/cms/html-source/registrations.html">
         <span>03</span>
         <h2>Registrations</h2>
         <p>Review athlete submissions and follow-up details.</p>
       </a>
 
-      <a class="dashboard-node node-site" href="#">
+      <a class="dashboard-node node-site" href="/cms/html-source/site-copy.html">
         <span>04</span>
         <h2>Site Copy</h2>
         <p>Update page text, calls to action, and program information.</p>
@@ -62,14 +62,14 @@
     const message = document.getElementById('dashboardMessage');
 
     if (!user) {
-      window.location.href = '/cms/';
+      window.location.href = '/cms/html-source/index.html';
     } else {
       message.textContent = `Signed in as ${user.display_name || user.username}.`;
     }
 
     document.getElementById('logoutButton').addEventListener('click', () => {
       sessionStorage.removeItem('cmsUser');
-      window.location.href = '/cms/';
+      window.location.href = '/cms/html-source/index.html';
     });
   </script>
 </body>

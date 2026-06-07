@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Site Copy - Genesee Swift CMS</title>
+  <link rel="stylesheet" href="../css-source/cms.css">
+</head>
+<body>
+  <main class="cms-page site-copy-page">
+    <header class="cms-header">
+      <div>
+        <p class="brand-kicker">Genesee Swift CMS</p>
+        <h1>Site Copy</h1>
+      </div>
+      <div class="cms-header-actions">
+        <a class="cms-link-button" href="/cms/html-source/dashboard.html">Dashboard</a>
+        <button class="cms-link-button" type="button" id="saveCopyButton">Save Changes</button>
+      </div>
+    </header>
+
+    <section class="cms-workspace site-copy-workspace">
+      <div class="cms-surface site-copy-preview-shell">
+        <div class="event-toolbar site-copy-toolbar">
+          <div class="form-field">
+            <label for="pageSelect">Page</label>
+            <select id="pageSelect">
+              <option value="/public-site/html-source/index.html">Home</option>
+              <option value="/public-site/html-source/about.html">About</option>
+              <option value="/public-site/html-source/coaches.html">Coaches</option>
+              <option value="/public-site/html-source/contact.html">Contact</option>
+              <option value="/public-site/html-source/Offerings.html">Offerings</option>
+              <option value="/public-site/html-source/register.html">Register</option>
+              <option value="/public-site/html-source/upcoming-events.html">Events</option>
+              <option value="/public-site/html-source/gallery.html">Gallery</option>
+              <option value="/public-site/html-source/support.html">Support</option>
+              <option value="/public-site/html-source/shop.html">Shop</option>
+            </select>
+          </div>
+          <div class="site-copy-count" id="pendingCount">0 unsaved</div>
+        </div>
+
+        <iframe id="siteCopyFrame" class="site-copy-frame" title="Public site preview" src="/public-site/html-source/index.html"></iframe>
+      </div>
+
+      <aside class="cms-surface site-copy-editor" aria-labelledby="copyEditorTitle">
+        <h2 id="copyEditorTitle">Text Editor</h2>
+        <div class="readonly-detail">
+          <span>Selected Element</span>
+          <strong id="selectedElementLabel">None</strong>
+        </div>
+
+        <form class="cms-form" id="copyForm">
+          <div class="form-field">
+            <label for="copyText">Text</label>
+            <textarea id="copyText" rows="8" disabled></textarea>
+          </div>
+          <button type="submit" id="queueCopyButton" disabled>Queue Edit</button>
+        </form>
+
+        <p class="auth-message" id="copyMessage"></p>
+
+        <div class="site-copy-change-list" id="changeList">
+          <div class="event-empty-state compact">
+            <span>0</span>
+            <p>No queued edits.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="../js-source/site-copy.js"></script>
+</body>
+</html>

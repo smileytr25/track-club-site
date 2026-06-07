@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Event Management - Genesee Swift CMS</title>
-  <link rel="stylesheet" href="css-source/cms.css">
+  <link rel="stylesheet" href="../css-source/cms.css">
 </head>
 <body>
   <main class="cms-page">
@@ -14,8 +14,8 @@
         <h1>Event Management</h1>
       </div>
       <div class="cms-header-actions">
-        <a class="cms-link-button" href="/cms/dashboard.html">Dashboard</a>
-        <a class="cms-link-button primary" href="/cms/event-new.html">New Event</a>
+        <a class="cms-link-button" href="/cms/html-source/dashboard.html">Dashboard</a>
+        <a class="cms-link-button" href="/cms/html-source/event-new.html">New Event</a>
       </div>
     </header>
 
@@ -58,7 +58,7 @@
 
   <script>
     if (!sessionStorage.getItem('cmsUser')) {
-      window.location.href = '/cms/';
+      window.location.href = '/cms/html-source/index.html';
     }
 
     const searchInput = document.getElementById('eventSearch');
@@ -177,7 +177,7 @@
       const card = event.target.closest('.cms-event-card');
       if (!card) return;
 
-      window.location.href = `/cms/event-new.html?id=${encodeURIComponent(card.dataset.id)}`;
+      window.location.href = `/cms/html-source/event-new.html?id=${encodeURIComponent(card.dataset.id)}`;
     });
     list.addEventListener('keydown', event => {
       if (!['Enter', ' '].includes(event.key)) return;
@@ -186,7 +186,7 @@
       if (!card) return;
 
       event.preventDefault();
-      window.location.href = `/cms/event-new.html?id=${encodeURIComponent(card.dataset.id)}`;
+      window.location.href = `/cms/html-source/event-new.html?id=${encodeURIComponent(card.dataset.id)}`;
     });
     loadEvents();
   </script>

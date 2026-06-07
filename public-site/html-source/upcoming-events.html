@@ -101,7 +101,8 @@
                 &copy; 2025 Genesee Swift Track Club. All rights reserved.
             </footer>
         </div>
-    </body>
+  <script src="../js-source/site-copy.js"></script>
+</body>
     <script src="../js-source/loading.js"></script>
     <script src="../js-source/cart.js"></script>
     <script src="../js-source/nav-bar.js"></script>
@@ -152,14 +153,14 @@
             }
 
             eventsGrid.innerHTML = events.map(event => `
-                <article class="public-event-card">
+                <article class="public-event-card" data-cms-event-id="${escapeHtml(event.id)}">
                     <div class="public-event-date">${formatDate(event.eventDate)}</div>
-                    <h2>${escapeHtml(event.title)}</h2>
+                    <h2 data-cms-event-field="title">${escapeHtml(event.title)}</h2>
                     <div class="public-event-meta">
                         <span>${formatTime(event.eventTime)}</span>
-                        <span>${escapeHtml(event.location)}</span>
+                        <span data-cms-event-field="location">${escapeHtml(event.location)}</span>
                     </div>
-                    ${event.description ? `<p>${escapeHtml(event.description)}</p>` : ''}
+                    ${event.description ? `<p data-cms-event-field="description">${escapeHtml(event.description)}</p>` : ''}
                 </article>
             `).join('');
         }

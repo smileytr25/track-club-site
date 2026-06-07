@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Event Editor - Genesee Swift CMS</title>
-  <link rel="stylesheet" href="css-source/cms.css">
+  <link rel="stylesheet" href="../css-source/cms.css">
 </head>
 <body>
   <main class="cms-page">
@@ -13,7 +13,10 @@
         <p class="brand-kicker">Genesee Swift CMS</p>
         <h1 id="pageTitle">New Event</h1>
       </div>
-      <a class="cms-link-button" href="/cms/events.html">Back to Events</a>
+      <div class="cms-header-actions">
+        <a class="cms-link-button" href="/cms/html-source/dashboard.html">Dashboard</a>
+        <a class="cms-link-button" href="/cms/html-source/events.html">Back to Events</a>
+      </div>
     </header>
 
     <section class="cms-workspace single">
@@ -82,7 +85,7 @@
 
   <script>
     if (!sessionStorage.getItem('cmsUser')) {
-      window.location.href = '/cms/';
+      window.location.href = '/cms/html-source/index.html';
     }
 
     const form = document.getElementById('eventForm');
@@ -174,7 +177,7 @@
 
         setMessage('Event saved. Returning to event list...', 'success');
         window.setTimeout(() => {
-          window.location.href = '/cms/events.html';
+          window.location.href = '/cms/html-source/events.html';
         }, 700);
       } catch (error) {
         setMessage(error.message, 'error');
