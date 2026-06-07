@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New Event - Genesee Swift CMS</title>
+  <link rel="stylesheet" href="css-source/cms.css">
+</head>
+<body>
+  <main class="cms-page">
+    <header class="cms-header">
+      <div>
+        <p class="brand-kicker">Genesee Swift CMS</p>
+        <h1>New Event</h1>
+      </div>
+      <a class="cms-link-button" href="/cms/events.html">Back to Events</a>
+    </header>
+
+    <section class="cms-workspace single">
+      <article class="cms-surface">
+        <h2>Event Details</h2>
+        <p class="auth-message" id="eventMessage" role="status"></p>
+        <form class="cms-form" id="eventForm">
+          <div class="form-field">
+            <label for="eventTitle">Event Title</label>
+            <input id="eventTitle" name="title" type="text" placeholder="AAU Qualifier" required>
+          </div>
+
+          <div class="cms-form-grid">
+            <div class="form-field">
+              <label for="eventDate">Date</label>
+              <input id="eventDate" name="eventDate" type="date" required>
+            </div>
+
+            <div class="form-field">
+              <label for="eventTime">Time</label>
+              <input id="eventTime" name="eventTime" type="time">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="eventLocation">Location</label>
+            <input id="eventLocation" name="location" type="text" placeholder="Carman-Ainsworth Middle School" required>
+          </div>
+
+          <div class="form-field">
+            <label for="eventStatus">Status</label>
+            <select id="eventStatus" name="eventStatus">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="eventDescription">Description</label>
+            <textarea id="eventDescription" name="description" rows="5" placeholder="Short public-facing event summary"></textarea>
+          </div>
+
+          <button type="submit">Save Event</button>
+        </form>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    if (!sessionStorage.getItem('cmsUser')) {
+      window.location.href = '/cms/';
+    }
+
+    const form = document.getElementById('eventForm');
+    const message = document.getElementById('eventMessage');
+    const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+      message.textContent = 'Saving event...';
+      message.className = 'auth-message';
+
+      try {
+        const response = await fetch(`${apiBase}/api/events/cms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to save event.');
+        }
+
+        message.textContent = 'Event saved. Returning to event list...';
+        message.className = 'auth-message success';
+        window.setTimeout(() => {
+          window.location.href = '/cms/events.html';
+        }, 700);
+      } catch (error) {
+        message.textContent = error.message;
+        message.className = 'auth-message error';
+      }
+    });
+  </script>
+</body>
+</html>

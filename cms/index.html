@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMS Login - Genesee Swift Track Club</title>
+  <link rel="stylesheet" href="css-source/cms.css">
+</head>
+<body>
+  <main class="auth-page">
+    <section class="auth-panel" aria-labelledby="authTitle">
+      <div class="brand-lockup">
+        <span class="brand-mark">GSTC</span>
+        <div>
+          <p class="brand-kicker">Genesee Swift</p>
+          <h1 id="authTitle">CMS Login</h1>
+        </div>
+      </div>
+
+      <div class="auth-tabs" role="tablist" aria-label="CMS authentication mode">
+        <button class="auth-tab active" type="button" data-mode="login">Login</button>
+        <button class="auth-tab" type="button" data-mode="signup">Sign Up</button>
+      </div>
+
+      <p class="auth-message" id="authMessage" role="status"></p>
+
+      <form class="auth-form" id="authForm">
+        <div class="form-field signup-only" hidden>
+          <label for="displayName">Display Name</label>
+          <input id="displayName" name="displayName" type="text" autocomplete="name">
+        </div>
+
+        <div class="form-field">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" required>
+        </div>
+
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+
+        <button id="submitButton" type="submit">Log In</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('authForm');
+    const message = document.getElementById('authMessage');
+    const submitButton = document.getElementById('submitButton');
+    const title = document.getElementById('authTitle');
+    const tabs = document.querySelectorAll('.auth-tab');
+    const signupFields = document.querySelectorAll('.signup-only');
+    const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
+    let mode = 'login';
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      const isSignup = mode === 'signup';
+
+      title.textContent = isSignup ? 'CMS Sign Up' : 'CMS Login';
+      submitButton.textContent = isSignup ? 'Create Account' : 'Log In';
+      message.textContent = '';
+      message.className = 'auth-message';
+
+      signupFields.forEach(field => {
+        field.hidden = !isSignup;
+      });
+
+      tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.mode === mode);
+      });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => setMode(tab.dataset.mode));
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      const endpoint = `${apiBase}${mode === 'signup' ? '/api/cms/signup' : '/api/cms/login'}`;
+
+      submitButton.disabled = true;
+      message.textContent = mode === 'signup' ? 'Creating account...' : 'Logging in...';
+      message.className = 'auth-message';
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const rawBody = await response.text();
+        let data = {};
+
+        try {
+          data = rawBody ? JSON.parse(rawBody) : {};
+        } catch {
+          data = { error: `Request failed with status ${response.status}. Make sure node server.js is running.` };
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Something went wrong.');
+        }
+
+        sessionStorage.setItem('cmsUser', JSON.stringify(data.user));
+        message.textContent = mode === 'signup' ? 'Account created. Redirecting...' : 'Login successful. Redirecting...';
+        message.className = 'auth-message success';
+        window.setTimeout(() => {
+          window.location.href = '/cms/dashboard.html';
+        }, 700);
+      } catch (error) {
+        message.textContent = error.message;
+        message.className = 'auth-message error';
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

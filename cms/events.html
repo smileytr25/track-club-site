@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Event Management - Genesee Swift CMS</title>
+  <link rel="stylesheet" href="css-source/cms.css">
+</head>
+<body>
+  <main class="cms-page">
+    <header class="cms-header">
+      <div>
+        <p class="brand-kicker">Genesee Swift CMS</p>
+        <h1>Event Management</h1>
+      </div>
+      <div class="cms-header-actions">
+        <a class="cms-link-button" href="/cms/dashboard.html">Dashboard</a>
+        <a class="cms-link-button primary" href="/cms/event-new.html">New Event</a>
+      </div>
+    </header>
+
+    <section class="cms-surface">
+      <div class="event-toolbar">
+        <div class="form-field">
+          <label for="eventSearch">Search</label>
+          <input id="eventSearch" type="search" placeholder="Search by title or location">
+        </div>
+
+        <div class="form-field">
+          <label for="eventSort">Sort By</label>
+          <select id="eventSort">
+            <option value="date-asc">Date: Soonest</option>
+            <option value="date-desc">Date: Latest</option>
+            <option value="title-asc">Title: A-Z</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="event-card-list" id="eventCardList">
+        <div class="event-empty-state">
+          <span>...</span>
+          <p>Loading events</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    if (!sessionStorage.getItem('cmsUser')) {
+      window.location.href = '/cms/';
+    }
+
+    const searchInput = document.getElementById('eventSearch');
+    const sortSelect = document.getElementById('eventSort');
+    const list = document.getElementById('eventCardList');
+    const apiBase = window.location.port === '3000' ? '' : 'http://localhost:3000';
+    let events = [];
+
+    function formatDate(value) {
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(new Date(`${value}T00:00:00`));
+    }
+
+    function formatTime(value) {
+      if (!value) return 'Time TBD';
+      const [hours, minutes] = value.split(':');
+      return new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(new Date(2000, 0, 1, hours, minutes));
+    }
+
+    function renderEvents() {
+      if (events.length === 0) {
+        list.innerHTML = `
+          <div class="event-empty-state">
+            <span>0</span>
+            <p>No CMS-managed events yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = events.map(event => `
+        <article class="cms-event-card" data-title="${event.title}" data-location="${event.location}" data-date="${event.eventDate}" data-status="${event.status}">
+          <div>
+            <p class="event-status ${event.status}">${event.status}</p>
+            <h2>${event.title}</h2>
+            <p>${event.location}</p>
+          </div>
+          <div class="event-meta">
+            <span>${formatDate(event.eventDate)}</span>
+            <span>${formatTime(event.eventTime)}</span>
+          </div>
+        </article>
+      `).join('');
+
+      updateEvents();
+    }
+
+    function updateEvents() {
+      const query = searchInput.value.trim().toLowerCase();
+      const cards = Array.from(list.querySelectorAll('.cms-event-card'));
+
+      cards.forEach(card => {
+        const searchable = `${card.dataset.title} ${card.dataset.location}`.toLowerCase();
+        card.hidden = query && !searchable.includes(query);
+      });
+
+      cards.sort((a, b) => {
+        if (sortSelect.value === 'date-desc') return b.dataset.date.localeCompare(a.dataset.date);
+        if (sortSelect.value === 'title-asc') return a.dataset.title.localeCompare(b.dataset.title);
+        if (sortSelect.value === 'status') return a.dataset.status.localeCompare(b.dataset.status);
+        return a.dataset.date.localeCompare(b.dataset.date);
+      });
+
+      cards.forEach(card => list.appendChild(card));
+    }
+
+    async function loadEvents() {
+      try {
+        const response = await fetch(`${apiBase}/api/events/cms`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load events.');
+        }
+
+        events = data.events;
+        renderEvents();
+      } catch (error) {
+        list.innerHTML = `
+          <div class="event-empty-state">
+            <span>!</span>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    searchInput.addEventListener('input', updateEvents);
+    sortSelect.addEventListener('change', updateEvents);
+    loadEvents();
+  </script>
+</body>
+</html>

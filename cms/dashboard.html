@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMS Dashboard - Genesee Swift Track Club</title>
+  <link rel="stylesheet" href="css-source/cms.css">
+</head>
+<body>
+  <main class="dashboard-page">
+    <section class="dashboard-map" aria-labelledby="dashboardTitle">
+      <svg class="connector-lines" viewBox="0 0 1000 620" aria-hidden="true" preserveAspectRatio="none">
+        <path d="M500 310 C390 220 300 170 190 126"></path>
+        <path d="M500 310 C655 210 735 160 850 118"></path>
+        <path d="M500 310 C370 360 285 415 170 500"></path>
+        <path d="M500 310 C635 375 735 435 860 510"></path>
+      </svg>
+
+      <article class="dashboard-core">
+        <div class="brand-lockup">
+          <span class="brand-mark">GSTC</span>
+          <div>
+            <p class="brand-kicker">Genesee Swift</p>
+            <h1 id="dashboardTitle">CMS Dashboard</h1>
+          </div>
+        </div>
+        <p class="auth-message success" id="dashboardMessage">Signed in.</p>
+        <div class="dashboard-actions">
+          <button type="button" onclick="window.location.href='/cms/events.html'">Open Editor</button>
+          <button type="button" class="button-secondary" id="logoutButton">Log Out</button>
+        </div>
+      </article>
+
+      <a class="dashboard-node node-events" href="/cms/events.html">
+        <span>01</span>
+        <h2>Events</h2>
+        <p>Manage meets, dates, locations, and public event cards.</p>
+      </a>
+
+      <a class="dashboard-node node-gallery" href="#">
+        <span>02</span>
+        <h2>Gallery</h2>
+        <p>Curate photos and control what appears in the public slideshow.</p>
+      </a>
+
+      <a class="dashboard-node node-registrations" href="#">
+        <span>03</span>
+        <h2>Registrations</h2>
+        <p>Review athlete submissions and follow-up details.</p>
+      </a>
+
+      <a class="dashboard-node node-site" href="#">
+        <span>04</span>
+        <h2>Site Copy</h2>
+        <p>Update page text, calls to action, and program information.</p>
+      </a>
+    </section>
+  </main>
+
+  <script>
+    const user = JSON.parse(sessionStorage.getItem('cmsUser') || 'null');
+    const message = document.getElementById('dashboardMessage');
+
+    if (!user) {
+      window.location.href = '/cms/';
+    } else {
+      message.textContent = `Signed in as ${user.display_name || user.username}.`;
+    }
+
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      sessionStorage.removeItem('cmsUser');
+      window.location.href = '/cms/';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+:root {
+  --gstc-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+
+  --gstc-color-bg: #0a0a0a;
+  --gstc-color-bg-elevated: #1a1a1a;
+  --gstc-color-surface: rgba(26, 26, 26, 0.8);
+  --gstc-color-surface-strong: rgba(10, 10, 10, 0.95);
+  --gstc-color-surface-solid: #1a1a1a;
+
+  --gstc-color-text: #e4e4e7;
+  --gstc-color-text-strong: #ffffff;
+  --gstc-color-muted: #a1a1aa;
+  --gstc-color-subtle: #71717a;
+
+  --gstc-color-brand: #DC5F00;
+  --gstc-color-brand-hover: #ff7a1f;
+  --gstc-color-brand-warm: #ff8c00;
+  --gstc-color-brand-gold: #ffa500;
+
+  --gstc-brand-rgb: 220, 95, 0;
+  --gstc-brand-hover-rgb: 255, 122, 31;
+  --gstc-bg-rgb: 10, 10, 10;
+  --gstc-surface-rgb: 26, 26, 26;
+  --gstc-white-rgb: 255, 255, 255;
+  --gstc-black-rgb: 0, 0, 0;
+
+  --gstc-gradient-page: linear-gradient(180deg, var(--gstc-color-bg) 0%, var(--gstc-color-bg-elevated) 100%);
+  --gstc-gradient-brand: linear-gradient(135deg, var(--gstc-color-brand) 0%, var(--gstc-color-brand-hover) 100%);
+  --gstc-gradient-brand-soft: linear-gradient(135deg, rgba(var(--gstc-brand-rgb), 0.9) 0%, rgba(var(--gstc-brand-hover-rgb), 0.9) 100%);
+  --gstc-gradient-brand-hero: linear-gradient(135deg, rgba(var(--gstc-brand-rgb), 0.95) 0%, rgba(var(--gstc-brand-hover-rgb), 0.95) 100%);
+  --gstc-gradient-text-brand: linear-gradient(135deg, var(--gstc-color-text-strong) 0%, var(--gstc-color-brand-hover) 100%);
+  --gstc-gradient-surface: linear-gradient(180deg, rgba(var(--gstc-bg-rgb), 0.98) 0%, rgba(var(--gstc-surface-rgb), 0.98) 100%);
+
+  --gstc-border-brand-subtle: 1px solid rgba(var(--gstc-brand-rgb), 0.2);
+  --gstc-border-brand: 1px solid rgba(var(--gstc-brand-rgb), 0.3);
+  --gstc-border-brand-strong: 1px solid rgba(var(--gstc-brand-rgb), 0.6);
+
+  --gstc-shadow-dark-sm: 0 4px 20px rgba(var(--gstc-black-rgb), 0.5);
+  --gstc-shadow-dark-md: 0 8px 32px rgba(var(--gstc-black-rgb), 0.5);
+  --gstc-shadow-dark-lg: 0 8px 40px rgba(var(--gstc-black-rgb), 0.5);
+  --gstc-shadow-brand-sm: 0 0 20px rgba(var(--gstc-brand-rgb), 0.3);
+  --gstc-shadow-brand-md: 0 0 30px rgba(var(--gstc-brand-rgb), 0.4);
+  --gstc-shadow-brand-lg: 0 12px 40px rgba(var(--gstc-brand-rgb), 0.4);
+
+  --gstc-radius-sm: 6px;
+  --gstc-radius-md: 8px;
+  --gstc-radius-lg: 12px;
+  --gstc-radius-xl: 16px;
+
+  --gstc-nav-height: 70px;
+  --gstc-page-max-width: 1400px;
+}

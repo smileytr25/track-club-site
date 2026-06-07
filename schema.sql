@@ -35,6 +35,86 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: cms_auth; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cms_auth (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    username text NOT NULL,
+    password_hash text NOT NULL,
+    display_name text,
+    role text DEFAULT 'admin'::text NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    last_login_at timestamp without time zone,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT cms_auth_role_check CHECK ((role = ANY (ARRAY['admin'::text, 'editor'::text])))
+);
+
+
+--
+-- Name: cms_auth cms_auth_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cms_auth
+    ADD CONSTRAINT cms_auth_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_cms_auth_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cms_auth_active ON public.cms_auth USING btree (active);
+
+
+--
+-- Name: idx_cms_auth_username_unique; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_cms_auth_username_unique ON public.cms_auth USING btree (lower(username));
+
+
+--
+-- Name: cms_events; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cms_events (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    title text NOT NULL,
+    event_date date NOT NULL,
+    event_time time without time zone,
+    location text NOT NULL,
+    description text,
+    status text DEFAULT 'draft'::text NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    CONSTRAINT cms_events_status_check CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text])))
+);
+
+
+--
+-- Name: cms_events cms_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cms_events
+    ADD CONSTRAINT cms_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_cms_events_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cms_events_date ON public.cms_events USING btree (event_date);
+
+
+--
+-- Name: idx_cms_events_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cms_events_status ON public.cms_events USING btree (status);
+
+
+--
 -- Name: registrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -98,4 +178,3 @@ CREATE INDEX idx_registrations_program ON public.registrations USING btree (prog
 --
 -- PostgreSQL database dump complete
 --
-
